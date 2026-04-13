@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NewsGuard — AI Fake News Detector</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{
+  --teal:#00FFC6;--purple:#7C3AED;--cyan:#22D3EE;
+  --bg:#050816;--bg2:#080d1f;
+  --glass-border:rgba(0,255,198,0.18);
+  --text:#e2e8f0;--muted:#7a8aa0;
+  --red:#FF4D6D;--orange:#FF9B42;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:linear-gradient(to bottom, #020617 0%, #050816 50%, #000000 100%);color:var(--text);overflow-x:hidden;min-height:100vh}
+
+/* ── Canvas ── */
+#globe-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* Multi-layer overlay: subtle vignette to focus on center */
+.overlay{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background: radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(0,0,0,0.85) 100%);
+}
+
+/* ── Navbar ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:62px;padding:0 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,8,22,.55);backdrop-filter:blur(22px);
+  border-bottom:1px solid rgba(0,255,198,.10);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:'Poppins',sans-serif;font-weight:800;font-size:1.1rem;color:var(--teal);text-decoration:none;letter-spacing:-.02em}
+.nav-logo svg{width:26px;height:26px;filter:drop-shadow(0 0 7px var(--teal))}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:500;transition:color .2s;letter-spacing:.02em}
+.nav-links a:hover{color:var(--teal)}
+.nav-cta{background:linear-gradient(135deg,var(--teal),var(--cyan));color:#050816!important;padding:6px 18px;border-radius:20px;font-weight:700!important;font-size:.78rem!important;transition:box-shadow .3s,transform .2s!important}
+.nav-cta:hover{box-shadow:0 0 22px rgba(0,255,198,.5);transform:translateY(-1px)}
+
+/* ── Content ── */
+.content{position:relative;z-index:10;padding-top:62px}
+
+/* ── Hero: 3-row flex: text | spacer(Earth) | input ── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 1.5rem;
+}
+.hero-top{
+  padding-top:3.5rem;display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:.8rem;animation:fadeUp .9s ease both;
+  position:relative;
+}
+.hero-top::before{
+  content:'';
+  position:absolute;
+  inset:-80px -150px;
+  background:radial-gradient(ellipse at center, rgba(2,6,23,0.4) 0%, rgba(2,6,23,0.3) 45%, transparent 70%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mask-image: radial-gradient(ellipse at center, black 0%, black 35%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 0%, black 35%, transparent 70%);
+  z-index:-1;
+  pointer-events:none;
+}
+.hero-spacer{
+  flex:1;min-height:clamp(100px,18vh,220px);pointer-events:none;
+}
+.hero-bottom{
+  padding-bottom:3rem;display:flex;flex-direction:column;align-items:center;
+  width:100%;animation:fadeUp .9s .3s ease both;
+}
+
+/* Badge */
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,255,198,.06);border:1px solid rgba(0,255,198,.22);
+  border-radius:100px;padding:5px 16px;
+  font-size:.72rem;font-weight:600;letter-spacing:.09em;color:var(--teal);text-transform:uppercase;
+}
+.badge-dot{width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pDot 2s infinite}
+@keyframes pDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
+
+/* Heading */
+.hero h1{font-family:'Poppins',sans-serif;font-size:clamp(1.95rem,4.6vw,3.9rem);font-weight:900;line-height:1.08;letter-spacing:-.035em;text-shadow:0 4px 24px rgba(0,0,0,0.9)}
+.grad{background:linear-gradient(135deg,#ffffff 0%,var(--teal) 35%,var(--cyan) 75%,#d8b4fe 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(0,255,198,0.45)) drop-shadow(0 4px 15px rgba(0,0,0,0.9))}
+.hero>*>p{max-width:510px;font-size:1.05rem;color:#f8fafc;line-height:1.7;margin-top:.2rem;text-shadow:0 2px 15px rgba(0,0,0,1),0 0 20px rgba(0,0,0,0.8)}
+
+/* Decorative rings around Earth removed */
+
+/* Satellite label */
+#sat-label{
+  position:fixed;z-index:5;pointer-events:none;
+  font-family:'Space Mono',monospace;font-size:.58rem;color:var(--cyan);letter-spacing:.08em;
+  background:rgba(5,8,22,.72);border:1px solid rgba(34,211,238,.3);
+  padding:2px 7px;border-radius:4px;opacity:0;transition:opacity .5s;white-space:nowrap;
+}
+
+/* ── Input card ── */
+.input-card{
+  width:100%;max-width:660px;
+  background:rgba(10,15,30,.65);border:1px solid rgba(0,255,198,.3);
+  border-radius:22px;padding:1.7rem;
+  backdrop-filter:blur(30px);
+  box-shadow:0 0 30px rgba(0,255,198,.1),0 20px 40px rgba(0,0,0,.6);
+  animation:floatCard 7s ease-in-out 1s infinite;
+  position:relative;overflow:hidden;
+}
+.input-card::before{content:'';position:absolute;inset:0;border-radius:22px;background:linear-gradient(135deg,rgba(0,255,198,.04),rgba(34,211,238,.02),rgba(124,58,237,.04));pointer-events:none}
+@keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.scanning-glow{position:absolute;inset:-1px;border-radius:23px;background:linear-gradient(var(--bg2),var(--bg2)) padding-box,linear-gradient(135deg,var(--teal),var(--purple),var(--cyan)) border-box;border:2px solid transparent;opacity:0;pointer-events:none;transition:opacity .4s}
+.input-card.scanning .scanning-glow{opacity:1;animation:scanBorder 2s linear infinite}
+@keyframes scanBorder{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.035);border-radius:11px;padding:4px;margin-bottom:1.1rem}
+.tab-btn{flex:1;padding:8px 10px;border:none;background:transparent;color:var(--muted);font-family:'Inter',sans-serif;font-size:.77rem;font-weight:500;border-radius:7px;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:5px}
+.tab-btn.active{background:linear-gradient(135deg,rgba(0,255,198,.13),rgba(34,211,238,.09));color:var(--teal);box-shadow:0 0 12px rgba(0,255,198,.1)}
+.tab-content{display:none}.tab-content.active{display:block}
+textarea,.url-input,.upload-area{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:13px;color:var(--text);font-family:'Inter',sans-serif;font-size:.87rem;outline:none;transition:border-color .3s,box-shadow .3s;padding:13px 15px}
+textarea{height:115px;resize:none;line-height:1.6}
+textarea:focus,.url-input:focus{border-color:rgba(0,255,198,.38);box-shadow:0 0 22px rgba(0,255,198,.07)}
+.upload-area{height:115px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;border-style:dashed;border-color:rgba(0,255,198,.18);color:var(--muted);font-size:.84rem;transition:all .3s}
+.upload-area:hover{border-color:var(--teal);background:rgba(0,255,198,.03);color:var(--teal)}
+
+/* Analyze button */
+.analyze-btn{width:100%;margin-top:.85rem;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--teal) 0%,var(--cyan) 50%,#6ee7f7 100%);color:#050816;font-family:'Poppins',sans-serif;font-weight:700;font-size:.93rem;letter-spacing:.03em;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .3s;animation:pulseBtn 3s ease-in-out infinite}
+.analyze-btn:hover{transform:translateY(-2px);box-shadow:0 0 45px rgba(0,255,198,.5),0 12px 28px rgba(0,0,0,.4)}
+.analyze-btn:active{transform:translateY(0)}
+@keyframes pulseBtn{0%,100%{box-shadow:0 0 22px rgba(0,255,198,.22)}50%{box-shadow:0 0 38px rgba(0,255,198,.45),0 0 65px rgba(34,211,238,.18)}}
+.btn-inner{display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.3);transform:scale(0);animation:ripple .6s linear;pointer-events:none}
+@keyframes ripple{to{transform:scale(5);opacity:0}}
+
+/* ── Loading ── */
+.loading-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(5,8,22,.82);backdrop-filter:blur(12px);align-items:center;justify-content:center;flex-direction:column;gap:1.75rem}
+.loading-overlay.active{display:flex}
+.radar{position:relative;width:130px;height:130px}
+.radar-ring{position:absolute;border-radius:50%;border:1.5px solid rgba(0,255,198,.28)}
+.radar-ring:nth-child(1){inset:0}.radar-ring:nth-child(2){inset:17px}.radar-ring:nth-child(3){inset:34px}.radar-ring:nth-child(4){inset:51px}
+.radar-sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(0,255,198,.65) 0deg,transparent 60deg,transparent 360deg);animation:rSpin 1.8s linear infinite}
+@keyframes rSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.radar-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:var(--teal);border-radius:50%;box-shadow:0 0 12px var(--teal)}
+.loading-text{font-family:'Space Mono',monospace;font-size:.77rem;color:var(--teal);letter-spacing:.1em;animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.shimmer-lines{display:flex;flex-direction:column;gap:8px;width:250px}
+.shimmer-line{height:7px;border-radius:4px;background:linear-gradient(90deg,rgba(255,255,255,.03) 25%,rgba(0,255,198,.1) 50%,rgba(255,255,255,.03) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+.shimmer-line:nth-child(2){width:72%;animation-delay:.2s}.shimmer-line:nth-child(3){width:52%;animation-delay:.4s}
+@keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}}
+
+/* ── Stats ── */
+.stats-strip{display:flex;justify-content:center;gap:4rem;padding:2.5rem 1.5rem;animation:fadeUp .8s .6s ease both}
+.stat-num{font-family:'Poppins',sans-serif;font-weight:900;font-size:1.9rem;background:linear-gradient(135deg,var(--teal),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
+
+/* ── Results ── */
+#results{display:none;padding:4rem 1.5rem;max-width:1000px;margin:0 auto}
+#results.visible{display:block;animation:fadeUp .6s ease both}
+.results-header{text-align:center;margin-bottom:2.25rem}
+.results-header h2{font-family:'Poppins',sans-serif;font-size:1.75rem;font-weight:800;letter-spacing:-.02em}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem;margin-bottom:1.5rem}
+.result-card{background:rgba(8,13,31,.82);border:1px solid rgba(0,255,198,.09);border-radius:18px;padding:1.4rem;backdrop-filter:blur(18px);transition:border-color .3s,box-shadow .3s;animation:fadeUp .5s ease both}
+.result-card:hover{border-color:rgba(0,255,198,.22);box-shadow:0 0 30px rgba(0,255,198,.05)}
+.card-label{font-size:.67rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem;display:flex;align-items:center;gap:6px}
+.trust-score-wrap{display:flex;align-items:center;gap:1.75rem}
+.score-circle{position:relative;width:108px;height:108px;flex-shrink:0}
+.score-circle svg{transform:rotate(-90deg)}
+.bg-ring{fill:none;stroke:rgba(255,255,255,.05);stroke-width:8}
+.progress-ring{fill:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
+.score-number{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Poppins',sans-serif;font-weight:800;font-size:1.55rem}
+.score-info{flex:1}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 13px;border-radius:100px;font-weight:700;font-size:.77rem;letter-spacing:.05em;margin-bottom:.65rem}
+.status-badge.real{background:rgba(0,255,198,.1);color:var(--teal);border:1px solid rgba(0,255,198,.28)}
+.status-badge.fake{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.28)}
+.status-badge.uncertain{background:rgba(255,155,66,.1);color:var(--orange);border:1px solid rgba(255,155,66,.28)}
+.risk-bar-wrap{margin-top:9px}
+.risk-label{font-size:.77rem;color:var(--muted);margin-bottom:5px}
+.risk-bar{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.risk-fill{height:100%;border-radius:3px;width:0%;transition:width 1.5s cubic-bezier(.4,0,.2,1)}
+.signals-list{display:flex;flex-direction:column;gap:9px}
+.signal-item{display:flex;align-items:center;gap:11px;padding:9px 13px;background:rgba(255,255,255,.02);border-radius:9px;border:1px solid rgba(255,255,255,.05);font-size:.82rem}
+.signal-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.93rem}
+.signal-icon.good{background:rgba(0,255,198,.09)}.signal-icon.bad{background:rgba(255,77,109,.09)}.signal-icon.neutral{background:rgba(255,155,66,.09)}
+.signal-meta{flex:1}.signal-name{font-weight:600;color:var(--text)}.signal-val{font-size:.72rem;color:var(--muted)}
+.signal-badge{font-size:.62rem;font-weight:700;padding:3px 7px;border-radius:5px;letter-spacing:.05em}
+.signal-badge.pass{background:rgba(0,255,198,.14);color:var(--teal)}.signal-badge.fail{background:rgba(255,77,109,.14);color:var(--red)}.signal-badge.warn{background:rgba(255,155,66,.14);color:var(--orange)}
+.explanation-text{font-size:.87rem;line-height:1.72;color:var(--text);opacity:.88}
+.claims-list{display:flex;flex-direction:column;gap:7px}
+.claim-item{padding:11px 13px;background:rgba(255,255,255,.02);border-radius:9px;border-left:3px solid;font-size:.82rem;line-height:1.5}
+.claim-item.verified{border-color:var(--teal)}.claim-item.false{border-color:var(--red)}.claim-item.unverified{border-color:var(--orange)}
+.claim-status{font-size:.67rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+.claim-status.verified{color:var(--teal)}.claim-status.false{color:var(--red)}.claim-status.unverified{color:var(--orange)}
+.source-list{display:flex;flex-direction:column;gap:7px}
+.source-item{display:flex;align-items:center;gap:11px;padding:9px 13px;background:rgba(255,255,255,.02);border-radius:9px;border:1px solid rgba(255,255,255,.05);font-size:.77rem;text-decoration:none;color:var(--text);transition:border-color .2s}
+.source-item:hover{border-color:rgba(0,255,198,.28)}
+.source-favicon{width:26px;height:26px;background:rgba(0,255,198,.09);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.84rem;flex-shrink:0}
+.source-name{font-weight:600}.source-desc{color:var(--muted);font-size:.72rem}
+.country-strip{display:flex;gap:9px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none}
+.country-strip::-webkit-scrollbar{display:none}
+.country-chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:6px 12px;font-size:.75rem;white-space:nowrap;flex-shrink:0}
+.country-trust{font-weight:700;font-size:.69rem}
+
+/* ── Features ── */
+.features{padding:5rem 1.5rem;max-width:1100px;margin:0 auto}
+.section-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.75rem;text-align:center;letter-spacing:-.02em;margin-bottom:.6rem}
+.section-sub{text-align:center;color:var(--muted);font-size:.92rem;max-width:460px;margin:0 auto 2.75rem;line-height:1.65}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.15rem}
+.feature-card{padding:1.6rem;background:rgba(8,13,31,.6);border:1px solid rgba(255,255,255,.06);border-radius:18px;transition:all .3s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,198,.4),transparent);opacity:0;transition:opacity .3s}
+.feature-card:hover{border-color:rgba(0,255,198,.2);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.28),0 0 28px rgba(0,255,198,.05)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{width:46px;height:46px;border-radius:11px;background:linear-gradient(135deg,rgba(0,255,198,.14),rgba(34,211,238,.07));display:flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:.9rem;border:1px solid rgba(0,255,198,.14)}
+.feature-card h3{font-family:'Poppins',sans-serif;font-weight:700;font-size:.96rem;margin-bottom:.4rem;letter-spacing:-.01em}
+.feature-card p{color:var(--muted);font-size:.84rem;line-height:1.62}
+
+/* ── Footer ── */
+footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 2rem;text-align:center;position:relative;z-index:10}
+.footer-logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.25rem;color:var(--teal);letter-spacing:-.02em;margin-bottom:.7rem}
+.footer-desc{color:var(--muted);font-size:.84rem;max-width:380px;margin:0 auto 1.15rem;line-height:1.62}
+.footer-tags{display:flex;justify-content:center;gap:.85rem;flex-wrap:wrap;margin-bottom:1.35rem}
+.footer-tag{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:100px;padding:4px 13px;font-size:.72rem;color:var(--muted)}
+.footer-disclaimer{font-size:.72rem;color:rgba(122,138,160,.55);border-top:1px solid rgba(255,255,255,.04);padding-top:1.15rem;margin-top:1.15rem;max-width:480px;margin-left:auto;margin-right:auto}
+.footer-links{display:flex;justify-content:center;gap:1.75rem;margin-bottom:1.15rem}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:.77rem;transition:color .2s}
+.footer-links a:hover{color:var(--teal)}
+.hk-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);border-radius:100px;padding:5px 14px;font-size:.72rem;color:#a78bfa;margin-bottom:1.15rem}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(0,255,198,.18);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:rgba(0,255,198,.38)}
+@media(max-width:640px){.nav-links{display:none}.stats-strip{gap:1.75rem}.trust-score-wrap{flex-direction:column;align-items:flex-start}.results-grid{grid-template-columns:1fr}.earth-ring,.earth-ring2{display:none}}
+
+/* ═══════════════════════════════════════════════════════
+   SOURCE RELIABILITY CHECKER
+   ═══════════════════════════════════════════════════════ */
+.src-section{
+  position:relative;z-index:10;
+  padding:5rem 1.5rem 3rem;
+  max-width:1000px;margin:0 auto;
+}
+.src-header{text-align:center;margin-bottom:2.5rem}
+.src-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(0,255,198,.1);border:1px solid rgba(0,255,198,.25);
+  color:var(--teal);font-size:.72rem;font-weight:700;letter-spacing:.1em;
+  padding:4px 14px;border-radius:20px;margin-bottom:1rem;
+}
+.src-title{
+  font-family:'Poppins',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:800;color:#fff;line-height:1.15;margin-bottom:.8rem;
+}
+.src-title-accent{
+  background:linear-gradient(135deg,var(--teal),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.src-subtitle{color:var(--muted);font-size:.95rem;max-width:600px;margin:0 auto;line-height:1.7}
+
+/* ── Input row ── */
+.src-input-row{
+  display:flex;gap:12px;margin-bottom:1rem;
+  background:rgba(255,255,255,.04);border:1px solid rgba(0,255,198,.18);
+  border-radius:16px;padding:8px;backdrop-filter:blur(12px);
+}
+.src-input-wrap{
+  flex:1;display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:0 14px;
+}
+.src-input-icon{font-size:1.1rem;opacity:.6}
+.src-input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:#fff;font-family:'Inter',sans-serif;font-size:.95rem;padding:14px 0;
+}
+.src-input::placeholder{color:rgba(255,255,255,.3)}
+.src-btn{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--teal),var(--cyan));
+  color:#050816;border:none;border-radius:10px;padding:14px 22px;
+  font-weight:700;font-size:.88rem;cursor:pointer;
+  transition:box-shadow .3s,transform .2s;white-space:nowrap;
+}
+.src-btn:hover{box-shadow:0 0 24px rgba(0,255,198,.5);transform:translateY(-1px)}
+.src-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── Quick buttons ── */
+.src-quick-domains{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  margin-bottom:2rem;
+}
+.src-quick-label{color:var(--muted);font-size:.8rem;margin-right:4px}
+.src-quick-btn{
+  padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;
+  cursor:pointer;border:1px solid;transition:all .25s;
+}
+.src-quick-btn.trusted{
+  color:#10b981;border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.1);
+}
+.src-quick-btn.trusted:hover{background:rgba(16,185,129,.2);box-shadow:0 0 14px rgba(16,185,129,.3)}
+.src-quick-btn.suspicious{
+  color:#ef4444;border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.1);
+}
+.src-quick-btn.suspicious:hover{background:rgba(239,68,68,.2);box-shadow:0 0 14px rgba(239,68,68,.3)}
+
+/* ── Result Panel ── */
+.src-result-panel{
+  background:rgba(255,255,255,.03);border:1px solid rgba(0,255,198,.15);
+  border-radius:20px;padding:2rem;margin-bottom:2.5rem;
+  animation:fadeUp .5s ease both;
+}
+.src-top-row{
+  display:grid;grid-template-columns:200px 1fr;gap:1.5rem;
+  margin-bottom:2rem;align-items:start;
+}
+@media(max-width:600px){.src-top-row{grid-template-columns:1fr}}
+
+/* ── Gauge ── */
+.src-gauge-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:1.2rem;
+}
+.src-gauge-svg{width:160px;height:auto}
+.src-gauge-verdict{
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:.95rem;
+  text-align:center;margin-top:.3rem;color:#fff;
+}
+.src-gauge-tier{
+  font-size:.75rem;font-weight:600;letter-spacing:.07em;
+  color:var(--muted);margin-top:.2rem;text-align:center;
+}
+
+/* ── Domain Card ── */
+.src-domain-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:1.4rem;display:flex;flex-direction:column;gap:.8rem;
+}
+.src-domain-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.src-domain-flag{font-size:1.4rem}
+.src-domain-name{font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;color:var(--teal)}
+.src-tier-badge{
+  font-size:.7rem;font-weight:700;letter-spacing:.08em;
+  padding:3px 10px;border-radius:12px;border:1px solid;
+}
+.src-domain-meta{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.src-meta-item{display:flex;flex-direction:column;gap:2px}
+.src-meta-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.src-meta-val{font-size:.82rem;font-weight:600;color:#e2e8f0}
+.src-domain-notes{
+  font-size:.8rem;color:var(--muted);line-height:1.5;
+  padding:.6rem .8rem;background:rgba(255,255,255,.03);border-radius:8px;
+  border-left:3px solid rgba(0,255,198,.3);
+}
+.src-recommendation{
+  font-size:.82rem;color:var(--text);line-height:1.6;
+  padding:.7rem;background:rgba(0,255,198,.05);
+  border:1px solid rgba(0,255,198,.15);border-radius:10px;
+}
+
+/* ── Score Breakdown ── */
+.src-breakdown-wrap{margin-top:.5rem}
+.src-breakdown-title{
+  font-size:.82rem;font-weight:700;letter-spacing:.08em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:.8rem;
+}
+.src-breakdown-grid{display:flex;flex-direction:column;gap:.5rem}
+.src-breakdown-row{
+  display:grid;grid-template-columns:1fr 70px auto;
+  align-items:center;gap:12px;
+  padding:.65rem 1rem;border-radius:10px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  transition:background .2s;
+}
+.src-breakdown-row:hover{background:rgba(255,255,255,.06)}
+.src-br-rule{font-size:.83rem;color:#e2e8f0;font-weight:500}
+.src-br-detail{font-size:.75rem;color:var(--muted);margin-top:2px}
+.src-br-points{
+  font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;
+  text-align:right;
+}
+.src-br-positive{color:#10b981}
+.src-br-negative{color:#ef4444}
+.src-br-neutral{color:var(--muted)}
+.src-br-bar{
+  height:4px;border-radius:2px;background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.src-br-fill{height:100%;border-radius:2px;transition:width 1s ease}
+
+/* ── Sensational Words ── */
+.src-sensational-wrap{
+  margin-top:1.2rem;padding:1rem;border-radius:12px;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);
+}
+.src-sensational-title{font-size:.82rem;font-weight:700;color:#ef4444;margin-bottom:.6rem}
+.src-sensational-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.6rem}
+.src-sensational-chip{
+  font-size:.75rem;padding:3px 10px;border-radius:12px;
+  background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);
+  color:#fca5a5;font-weight:600;
+}
+.src-sensational-note{font-size:.75rem;color:var(--muted)}
+
+/* ── Directory ── */
+.src-directory{
+  margin-top:3rem;
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);
+  border-radius:20px;padding:2rem;
+}
+.src-dir-header{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:1rem;margin-bottom:1.2rem;
+}
+.src-dir-title{
+  font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;
+}
+.src-dir-count{
+  font-size:.75rem;font-weight:600;color:var(--teal);
+  background:rgba(0,255,198,.1);padding:3px 10px;border-radius:12px;
+  margin-left:8px;
+}
+.src-dir-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.src-dir-tab{
+  padding:6px 14px;border-radius:8px;font-size:.75rem;font-weight:600;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.src-dir-tab:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+.src-dir-tab.active{background:rgba(0,255,198,.15);border-color:rgba(0,255,198,.35);color:var(--teal)}
+
+/* ── Tier Legend ── */
+.src-tier-legend{
+  display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.5rem;
+}
+.src-legend-item{
+  font-size:.75rem;color:var(--muted);padding:.4rem .8rem;
+  border-left:3px solid var(--lc);border-radius:0 6px 6px 0;
+  background:rgba(255,255,255,.02);
+}
+
+/* ── Domain Grid ── */
+.src-domain-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;
+}
+.src-domain-tile{
+  padding:.8rem 1rem;border-radius:12px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);
+  transition:all .2s;display:flex;flex-direction:column;gap:4px;
+}
+.src-domain-tile:hover{
+  border-color:rgba(0,255,198,.3);background:rgba(0,255,198,.05);
+  transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,255,198,.1);
+}
+.src-tile-top{display:flex;justify-content:space-between;align-items:center}
+.src-tile-flag{font-size:1rem}
+.src-tile-score{
+  font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;
+  padding:2px 7px;border-radius:8px;
+}
+.src-tile-domain{font-size:.78rem;font-weight:700;color:#e2e8f0;font-family:'Space Mono',monospace}
+.src-tile-cat{font-size:.68rem;color:var(--muted)}
+
+/* ── Similar News Card ── */
+.sim-card{grid-column:1/-1}
+.sim-verdict-row{display:flex;align-items:center;gap:10px;margin-bottom:.6rem}
+.sim-verdict-badge{
+  font-size:.72rem;font-weight:700;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;border:1px solid;
+}
+.sim-verdict-badge.likely-real{color:#10b981;border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)}
+.sim-verdict-badge.partial{color:#f59e0b;border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1)}
+.sim-verdict-badge.suspicious{color:#ef4444;border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.1)}
+.sim-score-pill{
+  font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;
+  padding:3px 10px;border-radius:12px;
+  background:rgba(255,255,255,.07);color:var(--teal);
+}
+.sim-explanation{
+  font-size:.78rem;color:var(--muted);line-height:1.6;
+  padding:.6rem .8rem;background:rgba(255,255,255,.03);
+  border-radius:8px;border-left:3px solid rgba(0,255,198,.25);
+  margin-bottom:1rem;
+}
+.sim-matches-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:.6rem}
+.sim-matches{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.sim-match-item{
+  padding:.65rem .85rem;border-radius:10px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  transition:background .2s;
+}
+.sim-match-item:hover{background:rgba(255,255,255,.06)}
+.sim-match-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:.3rem}
+.sim-match-title{
+  font-size:.8rem;font-weight:600;color:#e2e8f0;line-height:1.4;
+  flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.sim-match-pct{
+  font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;
+  white-space:nowrap;padding:2px 8px;border-radius:8px;
+  background:rgba(0,255,198,.1);color:var(--teal);flex-shrink:0;
+}
+.sim-match-meta{display:flex;align-items:center;gap:8px;font-size:.7rem;color:var(--muted)}
+.sim-match-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:.4rem;overflow:hidden}
+.sim-match-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));border-radius:2px;transition:width 1s ease}
+.sim-footer{
+  display:flex;justify-content:space-between;
+  font-size:.68rem;color:var(--muted);padding-top:.5rem;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+</style>
+</head>
+<body>
+
+<canvas id="globe-canvas"></canvas>
+<div class="overlay"></div>
+
+<!-- Navbar -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 28 28" fill="none"><path d="M14 2L3 7.5V14.5C3 19.8 7.8 24.9 14 26C20.2 24.9 25 19.8 25 14.5V7.5L14 2Z" fill="rgba(0,255,198,0.1)" stroke="#00FFC6" stroke-width="1.5"/><path d="M9 14l3.5 3.5L19 11" stroke="#00FFC6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    NewsGuard
+  </a>
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#verify">Verify</a></li>
+    <li><a href="#source-checker">Source Check</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#">API</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#" class="nav-cta">GitHub ↗</a></li>
+  </ul>
+</nav>
+
+<div class="content">
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-top">
+      <div class="hero-badge"><span class="badge-dot"></span>AI-Powered · Real-Time · Global Coverage</div>
+      <h1>Detect Misinformation<br/><span class="grad">Before It Spreads</span></h1>
+      <p>AI-powered analysis to verify news credibility, detect fake information, and show trust scores instantly across any language or source.</p>
+    </div>
+    <div class="hero-spacer"></div>
+    <div class="hero-bottom" id="verify">
+      <div class="input-card" id="input-card">
+        <div class="scanning-glow"></div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="text">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="2" rx="1"/><rect x="3" y="10" width="14" height="2" rx="1"/><rect x="3" y="16" width="16" height="2" rx="1"/></svg>Paste Text
+          </button>
+          <button class="tab-btn" data-tab="url">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>From URL
+          </button>
+          <button class="tab-btn" data-tab="screenshot">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>Screenshot
+          </button>
+        </div>
+        <div class="tab-content active" id="tab-text">
+          <textarea id="news-input" placeholder="Paste news article, WhatsApp forward, social media post, or any content to verify credibility..."></textarea>
+        </div>
+        <div class="tab-content" id="tab-url">
+          <input type="url" class="url-input" id="url-input" placeholder="https://example.com/news-article-to-verify..."/>
+        </div>
+        <div class="tab-content" id="tab-screenshot">
+          <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Drop screenshot here or click to browse
+            <span style="font-size:.71rem;color:rgba(122,138,160,.55)">PNG · JPG · WEBP supported</span>
+          </div>
+          <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFileUpload(event)"/>
+        </div>
+        <button class="analyze-btn" id="analyze-btn" onclick="analyzeNews(event)">
+          <div class="btn-inner">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            Analyze News
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="stat-item"><div class="stat-num">2.4M+</div><div class="stat-label">Articles Verified</div></div>
+    <div class="stat-item"><div class="stat-num">97.3%</div><div class="stat-label">Accuracy Rate</div></div>
+    <div class="stat-item"><div class="stat-num">180+</div><div class="stat-label">Countries</div></div>
+    <div class="stat-item"><div class="stat-num">0.8s</div><div class="stat-label">Avg Analysis</div></div>
+  </div>
+
+  <!-- Results -->
+  <section id="results">
+    <div class="results-header">
+      <h2>Analysis <span style="background:linear-gradient(135deg,var(--teal),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Complete</span></h2>
+      <p style="color:var(--muted);font-size:.87rem;margin-top:.4rem">NewsGuard AI has finished analyzing your content</p>
+    </div>
+    <div class="results-grid">
+      <div class="result-card" style="animation-delay:.1s">
+        <div class="card-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Trust Score</div>
+        <div class="trust-score-wrap">
+          <div class="score-circle">
+            <svg width="108" height="108" viewBox="0 0 108 108"><circle class="bg-ring" cx="54" cy="54" r="45"/><circle class="progress-ring" id="progress-ring" cx="54" cy="54" r="45"/></svg>
+            <div class="score-number" id="score-number" style="color:var(--teal)">—</div>
+          </div>
+          <div class="score-info">
+            <div class="status-badge uncertain" id="status-badge">Analyzing...</div>
+            <div style="font-size:.8rem;color:var(--muted);line-height:1.5" id="verdict-text">Evaluating signals...</div>
+            <div class="risk-bar-wrap"><div class="risk-label">Risk Level</div><div class="risk-bar"><div class="risk-fill" id="risk-fill" style="background:var(--teal)"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="result-card" style="animation-delay:.2s">
+        <div class="card-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Credibility Signals</div>
+        <div class="signals-list" id="signals-list"><div class="signal-item"><div class="signal-icon neutral">⏳</div><div class="signal-meta"><div class="signal-name">Analyzing content...</div><div class="signal-val">Please wait</div></div></div></div>
+      </div>
+      <div class="result-card" style="animation-delay:.3s">
+        <div class="card-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Detected Claims</div>
+        <div class="claims-list" id="claims-list"><div style="color:var(--muted);font-size:.82rem">Claims appear after analysis...</div></div>
+      </div>
+      <div class="result-card" style="animation-delay:.4s">
+        <div class="card-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>AI Explanation</div>
+        <div class="explanation-text" id="explanation-text">The AI analysis report will appear here after scanning...</div>
+      </div>
+      <div class="result-card" style="animation-delay:.5s">
+        <div class="card-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>Fact-Check Sources</div>
+        <div class="source-list" id="source-list"><div style="color:var(--muted);font-size:.82rem">Sources appear after analysis...</div></div>
+      </div>
+      <div class="result-card" style="animation-delay:.6s">
+        <div class="card-label"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>Regional Trust Indicators</div>
+        <div class="country-strip" id="country-strip"><div style="color:var(--muted);font-size:.82rem">Loading...</div></div>
+      </div>
+
+      <!-- ═══ Similar News Panel ═══ -->
+      <div class="result-card sim-card" id="sim-card" style="animation-delay:.7s;display:none">
+        <div class="card-label">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Similar News Match
+        </div>
+
+        <!-- Verdict row -->
+        <div class="sim-verdict-row">
+          <div class="sim-verdict-badge" id="sim-verdict-badge">—</div>
+          <div class="sim-score-pill" id="sim-score-pill">0%</div>
+        </div>
+
+        <!-- Explanation -->
+        <div class="sim-explanation" id="sim-explanation">Checking knowledge base...</div>
+
+        <!-- Top Matches -->
+        <div class="sim-matches-label">📚 Top Matching Verified Articles</div>
+        <div class="sim-matches" id="sim-matches">
+          <div style="color:var(--muted);font-size:.78rem">No matches yet...</div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sim-footer">
+          <span id="sim-engine-label">TF-IDF + Cosine Similarity</span>
+          <span id="sim-kb-label">KB: — articles</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       SOURCE RELIABILITY CHECKER SECTION
+       ═══════════════════════════════════════════════════════════════ -->
+  <section class="src-section" id="source-checker">
+    <div class="src-header">
+      <div class="src-badge">🔍 NEW</div>
+      <h2 class="src-title">Website <span class="src-title-accent">Reliability Checker</span></h2>
+      <p class="src-subtitle">Enter any website URL to instantly score its trustworthiness using our curated database of 120+ sources, HTTPS detection, author verification, and sensational language analysis.</p>
+    </div>
+
+    <!-- Input Row -->
+    <div class="src-input-row">
+      <div class="src-input-wrap">
+        <span class="src-input-icon">🌐</span>
+        <input type="url" id="src-url-input" class="src-input"
+          placeholder="https://example.com/article-url"
+          autocomplete="off" spellcheck="false"/>
+      </div>
+      <button class="src-btn" id="src-check-btn" onclick="checkSourceReliability()">
+        <span id="src-btn-text">Check Source</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- Quick Domain Buttons -->
+    <div class="src-quick-domains">
+      <span class="src-quick-label">Quick check:</span>
+      <button class="src-quick-btn trusted" onclick="quickCheck('https://reuters.com')">reuters.com</button>
+      <button class="src-quick-btn trusted" onclick="quickCheck('https://bbc.com')">bbc.com</button>
+      <button class="src-quick-btn trusted" onclick="quickCheck('https://ndtv.com')">ndtv.com</button>
+      <button class="src-quick-btn trusted" onclick="quickCheck('https://thehindu.com')">thehindu.com</button>
+      <button class="src-quick-btn suspicious" onclick="quickCheck('https://infowars.com')">infowars.com</button>
+      <button class="src-quick-btn suspicious" onclick="quickCheck('https://postcard.news')">postcard.news</button>
+    </div>
+
+    <!-- Result Panel (hidden until checked) -->
+    <div class="src-result-panel" id="src-result-panel" style="display:none">
+
+      <!-- Top: Score Gauge + Domain Info -->
+      <div class="src-top-row">
+
+        <!-- Gauge -->
+        <div class="src-gauge-wrap">
+          <svg class="src-gauge-svg" viewBox="0 0 200 120">
+            <!-- Background arc -->
+            <path d="M 20 110 A 80 80 0 0 1 180 110" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="14" stroke-linecap="round"/>
+            <!-- Score arc (animated via JS) -->
+            <path id="src-gauge-arc" d="M 20 110 A 80 80 0 0 1 180 110" fill="none" stroke="var(--teal)" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="251.2" stroke-dashoffset="251.2" style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1),stroke .4s"/>
+            <!-- Score text -->
+            <text id="src-gauge-num" x="100" y="90" text-anchor="middle" fill="white" font-size="38" font-weight="800" font-family="'Poppins',sans-serif">0</text>
+            <text x="100" y="110" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="10" font-family="'Inter',sans-serif">TRUST SCORE</text>
+          </svg>
+          <div class="src-gauge-verdict" id="src-gauge-verdict">—</div>
+          <div class="src-gauge-tier" id="src-gauge-tier">—</div>
+        </div>
+
+        <!-- Domain Info Card -->
+        <div class="src-domain-card" id="src-domain-card">
+          <div class="src-domain-row">
+            <span class="src-domain-flag" id="src-domain-flag">🌐</span>
+            <span class="src-domain-name" id="src-domain-name">domain.com</span>
+            <span class="src-tier-badge" id="src-tier-badge">—</span>
+          </div>
+          <div class="src-domain-meta" id="src-domain-meta">
+            <div class="src-meta-item"><span class="src-meta-label">Category</span><span class="src-meta-val" id="src-meta-category">—</span></div>
+            <div class="src-meta-item"><span class="src-meta-label">Political Bias</span><span class="src-meta-val" id="src-meta-bias">—</span></div>
+            <div class="src-meta-item"><span class="src-meta-label">HTTPS</span><span class="src-meta-val" id="src-meta-https">—</span></div>
+            <div class="src-meta-item"><span class="src-meta-label">In Database</span><span class="src-meta-val" id="src-meta-indb">—</span></div>
+          </div>
+          <div class="src-domain-notes" id="src-domain-notes">—</div>
+          <div class="src-recommendation" id="src-recommendation">—</div>
+        </div>
+      </div>
+
+      <!-- Score Breakdown Table -->
+      <div class="src-breakdown-wrap">
+        <div class="src-breakdown-title">📊 Score Breakdown</div>
+        <div class="src-breakdown-grid" id="src-breakdown-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Sensational Words -->
+      <div class="src-sensational-wrap" id="src-sensational-wrap" style="display:none">
+        <div class="src-sensational-title">🎭 Sensational Language Detected</div>
+        <div class="src-sensational-chips" id="src-sensational-chips"></div>
+        <div class="src-sensational-note">These trigger words are commonly associated with clickbait or emotionally manipulative content.</div>
+      </div>
+    </div>
+
+    <!-- Source Directory (always visible) -->
+    <div class="src-directory">
+      <div class="src-dir-header">
+        <h3 class="src-dir-title">📚 Our Source Database <span class="src-dir-count" id="src-dir-count">120+ Sources</span></h3>
+        <div class="src-dir-tabs">
+          <button class="src-dir-tab active" onclick="filterDir(this, 1)">✅ Tier 1 — Trusted</button>
+          <button class="src-dir-tab" onclick="filterDir(this, 2)">🔵 Tier 2</button>
+          <button class="src-dir-tab" onclick="filterDir(this, 3)">⚠️ Tier 3</button>
+          <button class="src-dir-tab" onclick="filterDir(this, 4)">🚨 Unreliable</button>
+        </div>
+      </div>
+
+      <!-- Tier Legend -->
+      <div class="src-tier-legend">
+        <div class="src-legend-item" style="--lc:#10b981">✅ Tier 1: Highly Trusted (75–100) — Wire services, government bodies, peer-reviewed journals, dedicated fact-checkers</div>
+        <div class="src-legend-item" style="--lc:#3b82f6">🔵 Tier 2: Generally Trusted (55–74) — Established newspapers, broadcast networks, credible digital outlets</div>
+        <div class="src-legend-item" style="--lc:#f59e0b">⚠️ Tier 3: Mixed (35–54) — Opinion-heavy, tabloids, partisan outlets — verify claims independently</div>
+        <div class="src-legend-item" style="--lc:#ef4444">🚨 Tier 4: Unreliable (0–34) — Known misinformation, hoax sites, conspiracies — do not trust</div>
+      </div>
+
+      <!-- Domain Grid -->
+      <div class="src-domain-grid" id="src-domain-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+
+    <h2 class="section-title">Built for the <span style="background:linear-gradient(135deg,var(--teal),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Age of Misinformation</span></h2>
+    <p class="section-sub">NewsGuard combines cutting-edge AI with real-time fact-checking databases to protect truth at global scale.</p>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">🧠</div><h3>Deep AI Analysis</h3><p>Advanced LLMs dissect writing style, emotional manipulation, logical fallacies, and factual consistency.</p></div>
+      <div class="feature-card"><div class="feature-icon">🌐</div><h3>Source Trust Scoring</h3><p>Every source rated across 14 credibility dimensions including editorial standards and historical accuracy.</p></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><h3>Real-Time Verification</h3><p>Cross-references claims against 200+ global fact-checking databases in under a second.</p></div>
+      <div class="feature-card"><div class="feature-icon">🌍</div><h3>Multilingual Support</h3><p>Detects fake news in 47 languages including Hindi, Arabic, Mandarin, Spanish, and regional dialects.</p></div>
+      <div class="feature-card"><div class="feature-icon">🔒</div><h3>Privacy First</h3><p>All content analyzed in isolated sandboxes. We never store submissions or share data with third parties.</p></div>
+      <div class="feature-card"><div class="feature-icon">📊</div><h3>Detailed Reports</h3><p>Actionable credibility reports with source breakdowns, detected claims, and trusted alternatives.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">🛡️ NewsGuard</div>
+    <p class="footer-desc">An AI-powered platform to detect misinformation, verify news credibility, and protect information integrity globally.</p>
+    <div class="hk-badge">🏆 Mini Hackathon 2.0 — April 2025 · Project Submission</div>
+    <div class="footer-tags">
+      <span class="footer-tag">Anthropic Claude API</span><span class="footer-tag">Three.js WebGL</span>
+      <span class="footer-tag">Fake News Detection</span><span class="footer-tag">Source Trust Scoring</span>
+    </div>
+    <div class="footer-links">
+      <a href="#">GitHub Repository</a><a href="#">API Docs</a><a href="#">Developer</a><a href="#">Privacy</a>
+    </div>
+    <div class="footer-disclaimer">
+      ⚠️ Always verify information from trusted sources. NewsGuard is an AI tool and may not be 100% accurate.<br/>
+      Developed by <strong style="color:var(--teal)">Mohit Mehta</strong> for educational and hackathon purposes.
+    </div>
+  </footer>
+</div>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="radar">
+    <div class="radar-ring"></div><div class="radar-ring"></div>
+    <div class="radar-ring"></div><div class="radar-ring"></div>
+    <div class="radar-sweep"></div><div class="radar-center"></div>
+  </div>
+  <div class="loading-text" id="loading-msg">SCANNING CONTENT...</div>
+  <div class="shimmer-lines">
+    <div class="shimmer-line"></div><div class="shimmer-line"></div><div class="shimmer-line"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   ULTRA-REALISTIC NASA-QUALITY EARTH — Three.js
+   Full GLSL atmospheric scattering, sun-aware night
+   lights, animated clouds, Fresnel fog, bump map,
+   multi-layer glow halo, high-res textures.
+   ═══════════════════════════════════════════════════ */
+(function(){
+  const W=()=>window.innerWidth, H=()=>window.innerHeight;
+  const mob = W()<640;
+
+  const canvas = document.getElementById('globe-canvas');
+  const renderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, mob?1.5:2));
+  renderer.setSize(W(),H());
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(mob?62:48, W()/H(), 0.1, 500);
+  camera.position.z = mob ? 3.7 : 2.85;
+
+  /* ═══ Sun direction (shared across shaders) ═══ */
+  const sunDir = new THREE.Vector3(1.0, 0.3, 0.6).normalize();
+
+  /* ═══ Deep starfield with varied colors ═══ */
+  (function(){
+    const geo = new THREE.BufferGeometry();
+    const N=4800, pos=new Float32Array(N*3), sz=new Float32Array(N), col=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      const phi=Math.acos(2*Math.random()-1), th=Math.random()*6.283;
+      const r=25+Math.random()*40;
+      pos[i*3]=r*Math.sin(phi)*Math.cos(th);
+      pos[i*3+1]=r*Math.sin(phi)*Math.sin(th);
+      pos[i*3+2]=r*Math.cos(phi);
+      sz[i]=Math.random()*1.5+0.2;
+      // White and very faint blue stars
+      const temp=Math.random();
+      if(temp<0.2){col[i*3]=0.85;col[i*3+1]=0.9;col[i*3+2]=1.0;}      // blueish
+      else{col[i*3]=1.0;col[i*3+1]=1.0;col[i*3+2]=1.0;}                 // white
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('size',new THREE.BufferAttribute(sz,1));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.ShaderMaterial({
+      uniforms:{time:{value:0}},
+      vertexShader:`
+        attribute float size;
+        attribute vec3 color;
+        varying float vA;
+        varying vec3 vCol;
+        uniform float time;
+        void main(){
+          vCol = color;
+          // Reliable pseudo-random per star
+          float rnd = fract(sin(dot(position.xyz, vec3(12.9898, 78.233, 45.5432))) * 43758.5453);
+          // Speed to hit 2 to 4 seconds twinkle duration (~1.5 to 3.1 rad/sec)
+          float speed = 1.5 + rnd * 1.6;
+          // Very small brightness change: base 90% +/- 10% (ranging from 0.8 to 1.0)
+          vA = 0.9 + 0.1 * sin(time * speed + rnd * 6.2831);
+          gl_PointSize = size;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+        }
+      `,
+      fragmentShader:`
+        varying float vA;
+        varying vec3 vCol;
+        void main(){
+          float d = length(gl_PointCoord - vec2(0.5));
+          if(d > 0.5) discard;
+          float core = smoothstep(0.5, 0.1, d);
+          gl_FragColor = vec4(vCol, core * vA * 0.9);
+        }
+      `,
+      transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+      vertexColors:true
+    });
+    const starMesh = new THREE.Points(geo,mat);
+    scene.add(starMesh);
+    window._SM=mat;
+    window._StarMesh=starMesh;
+  })();
+
+  /* ═══ Globe group ═══ */
+  const G = new THREE.Group();
+  scene.add(G);
+
+  /* ═══ CLEAN PHOTOREALISTIC EARTH ═══ */
+  const earthGeo = new THREE.SphereGeometry(1, mob?64:96, mob?64:96);
+  
+  // Custom shader for clean earth with night lights on dark side
+  const earthUniforms = {
+    dayMap:       {value:null},
+    nightMap:     {value:null},
+    bumpMap:      {value:null},
+    specularMap:  {value:null},
+    sunDirection: {value:sunDir},
+    bumpScale:    {value:0.02},
+  };
+  
+  // Fallback blank texture
+  const blankCanvas = document.createElement('canvas');
+  blankCanvas.width = 1; blankCanvas.height = 1;
+  const blankTex = new THREE.CanvasTexture(blankCanvas);
+  earthUniforms.dayMap.value = blankTex;
+  earthUniforms.nightMap.value = blankTex;
+  earthUniforms.bumpMap.value = blankTex;
+  earthUniforms.specularMap.value = blankTex;
+
+  const earthShaderMat = new THREE.ShaderMaterial({
+    uniforms: earthUniforms,
+    vertexShader:`
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vViewDir;
+      void main(){
+        vUv = uv;
+        vNormal = normalize(normalMatrix * normal);
+        vec4 wp = modelMatrix * vec4(position,1.0);
+        vViewDir = normalize(cameraPosition - wp.xyz);
+        gl_Position = projectionMatrix * viewMatrix * wp;
+      }
+    `,
+    fragmentShader:`
+      uniform sampler2D dayMap;
+      uniform sampler2D nightMap;
+      uniform sampler2D bumpMap;
+      uniform sampler2D specularMap;
+      uniform vec3 sunDirection;
+      uniform float bumpScale;
+
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      varying vec3 vViewDir;
+
+      void main(){
+        // Bump mapping
+        vec2 texelSize = vec2(1.0/2048.0, 1.0/1024.0);
+        float bL = texture2D(bumpMap, vUv - vec2(texelSize.x, 0.0)).r;
+        float bR = texture2D(bumpMap, vUv + vec2(texelSize.x, 0.0)).r;
+        float bD = texture2D(bumpMap, vUv - vec2(0.0, texelSize.y)).r;
+        float bU = texture2D(bumpMap, vUv + vec2(0.0, texelSize.y)).r;
+        vec3 normal = normalize(vNormal + bumpScale * vec3(bL - bR, bD - bU, 0.0));
+
+        // Day lighting
+        float NdotL = dot(normal, sunDirection);
+        float diffuse = max(NdotL, 0.0);
+        float terminator = smoothstep(-0.1, 0.1, NdotL);
+        
+        vec3 dayColor = texture2D(dayMap, vUv).rgb;
+        vec3 ambientColor = dayColor * 0.03;
+        vec3 litColor = dayColor * diffuse;
+
+        // Specular
+        float specMask = texture2D(specularMap, vUv).r;
+        vec3 halfDir = normalize(sunDirection + vViewDir);
+        float spec = pow(max(dot(normal, halfDir), 0.0), 60.0) * specMask;
+        vec3 specColor = vec3(0.7, 0.8, 1.0) * spec * terminator;
+
+        // Night lights
+        vec3 nightColor = texture2D(nightMap, vUv).rgb;
+        float nightMask = smoothstep(0.05, -0.1, NdotL);
+        vec3 cityLights = nightColor * vec3(1.0, 0.9, 0.7) * nightMask;
+
+        // Very subtle rim glow (atmospheric edge)
+        float fresnel = pow(1.0 - max(dot(vViewDir, normal), 0.0), 3.0);
+        vec3 rim = vec3(0.4, 0.6, 1.0) * fresnel * 0.25 * diffuse;
+
+        vec3 finalColor = litColor * terminator + ambientColor * (1.0 - terminator) + cityLights + specColor + rim;
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `
+  });
+  const earth = new THREE.Mesh(earthGeo, earthShaderMat);
+  G.add(earth);
+
+  /* ═══ Subtle Background Glow ═══ */
+  const glowMat = new THREE.ShaderMaterial({
+    uniforms: { sunDirection: { value: sunDir } },
+    vertexShader: `
+      varying vec3 vNormal;
+      void main(){
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vNormal;
+      void main(){
+        float intensity = pow(0.7 - dot(vNormal, vec3(0,0,1)), 2.5);
+        gl_FragColor = vec4(0.15, 0.35, 0.7, intensity * 0.25);
+      }
+    `,
+    side: THREE.BackSide,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  G.add(new THREE.Mesh(new THREE.SphereGeometry(1.12, 48, 48), glowMat));
+
+  /* ═══ Load high-resolution textures ═══ */
+  const TL = new THREE.TextureLoader();
+  const BASE = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/planets/';
+
+  TL.load(BASE+'earth_atmos_2048.jpg', t=>{ t.anisotropy = renderer.capabilities.getMaxAnisotropy(); earthUniforms.dayMap.value = t; });
+  TL.load(BASE+'earth_lights_2048.png', t=>{ t.anisotropy = renderer.capabilities.getMaxAnisotropy(); earthUniforms.nightMap.value = t; });
+  TL.load(BASE+'earth_normal_2048.jpg', t=>{ t.anisotropy = renderer.capabilities.getMaxAnisotropy(); earthUniforms.bumpMap.value = t; });
+  TL.load(BASE+'earth_specular_2048.jpg', t=>{ earthUniforms.specularMap.value = t; });
+
+  /* ═══ Lighting ═══ */
+  scene.add(new THREE.AmbientLight(0x050816, 1.0));
+  const sunLight = new THREE.DirectionalLight(0xfffaec, 1.1);
+  sunLight.position.set(sunDir.x*10, sunDir.y*10, sunDir.z*10);
+  scene.add(sunLight);
+
+  /* ═══ Mouse parallax ═══ */
+  let mX=0,mY=0,tX=0,tY=0;
+  document.addEventListener('mousemove',e=>{
+    mX=(e.clientX/W()-.5)*2;
+    mY=(e.clientY/H()-.5)*2;
+  });
+
+  /* ═══ Main render loop ═══ */
+  let rotY=0, T=0;
+  const clock=new THREE.Clock();
+
+  function tick(){
+    requestAnimationFrame(tick);
+    const dt=Math.min(clock.getDelta(),.05);
+    T+=dt;
+
+    // Smooth rotation
+    rotY += 0.0010;
+    earth.rotation.y = rotY;
+
+    // Subtle star drift
+    if(window._StarMesh) {
+      window._StarMesh.rotation.y = rotY * 0.1;
+    }
+
+    if(window._SM) window._SM.uniforms.time.value = T;
+
+    // Smooth mouse parallax
+    const maxA=0.15;
+    tX+=(mX*maxA-tX)*0.035;
+    tY+=(-mY*maxA-tY)*0.035;
+    G.rotation.x=tY;
+    G.rotation.y=tX;
+
+    renderer.render(scene,camera);
+  }
+  tick();
+
+  window.addEventListener('resize',()=>{
+    camera.aspect=W()/H();
+    camera.updateProjectionMatrix();
+    renderer.setSize(W(),H());
+  });
+})();
+
+/* ═══════════════════════════════════════════════════
+   UI
+   ═══════════════════════════════════════════════════ */
+document.querySelectorAll('.tab-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+  });
+});
+
+let uploadedFile=null;
+function handleFileUpload(e){
+  uploadedFile=e.target.files[0];
+  if(uploadedFile){
+    document.getElementById('upload-area').innerHTML=`
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00FFC6" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      <span style="color:var(--teal);font-weight:600">${uploadedFile.name}</span>
+      <span style="font-size:.7rem;color:var(--muted)">Ready to analyze</span>`;
+  }
+}
+const ua=document.getElementById('upload-area');
+ua.addEventListener('dragover',e=>{e.preventDefault();ua.style.borderColor='var(--teal)';});
+ua.addEventListener('dragleave',()=>{ua.style.borderColor='rgba(0,255,198,.18)';});
+ua.addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f){uploadedFile=f;handleFileUpload({target:{files:[f]}});}});
+
+document.getElementById('analyze-btn').addEventListener('click',function(e){
+  const rc=this.getBoundingClientRect();
+  const r=document.createElement('span'); r.className='btn-ripple';
+  r.style.left=(e.clientX-rc.left-20)+'px'; r.style.top=(e.clientY-rc.top-20)+'px';
+  r.style.width=r.style.height='40px'; this.appendChild(r);
+  setTimeout(()=>r.remove(),700);
+  
+  // Trigger the machine learning engine!
+  analyzeNews(e);
+});
+
+const MSGS_TEXT=['SCANNING CONTENT...','ANALYZING CLAIM PATTERNS...','CHECKING SOURCE CREDIBILITY...','CROSS-REFERENCING DATABASES...','COMPUTING TRUST SCORE...','GENERATING REPORT...'];
+const MSGS_URL=['FETCHING ARTICLE...','EXTRACTING TEXT...','CHECKING SOURCE TRUST...','CROSS-REFERENCING DATABASES...','RUNNING AI ANALYSIS...','GENERATING REPORT...'];
+let MSGS=MSGS_TEXT;
+let loadInt;
+function startLoad(isUrl){MSGS=isUrl?MSGS_URL:MSGS_TEXT;let i=0;const el=document.getElementById('loading-msg');el.textContent=MSGS[0];loadInt=setInterval(()=>{i=(i+1)%MSGS.length;el.textContent=MSGS[i];},1100);}
+function stopLoad(){clearInterval(loadInt);}
+
+async function extractBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.readAsDataURL(file);
+    r.onload = () => resolve(r.result);
+    r.onerror = error => reject(error);
+  });
+}
+
+async function analyzeNews(ev){
+  const tab=document.querySelector('.tab-btn.active').dataset.tab;
+  let text='', inputUrl='', image='';
+
+  if(tab==='text'){
+    text=document.getElementById('news-input').value.trim();
+    if(!text){alert('Please paste content to analyze.');return;}
+  } else if(tab==='url'){
+    inputUrl=document.getElementById('url-input').value.trim();
+    if(!inputUrl){alert('Please enter a URL.');return;}
+    // Auto-prefix scheme if missing
+    if(!/^https?:\/\//i.test(inputUrl)) inputUrl='https://'+inputUrl;
+  } else {
+    if(!uploadedFile){alert('Please upload a screenshot.');return;}
+    image = await extractBase64(uploadedFile);
+  }
+
+  const isUrl = tab==='url';
+  document.getElementById('loading-overlay').classList.add('active');
+  document.getElementById('input-card').classList.add('scanning');
+  startLoad(isUrl);
+
+  function done(){
+    stopLoad();
+    document.getElementById('loading-overlay').classList.remove('active');
+    document.getElementById('input-card').classList.remove('scanning');
+  }
+
+  try{
+    let endpoint, body;
+    if(isUrl){
+      // ── URL PIPELINE: backend fetches HTML → extracts text → AI analysis ──
+      endpoint='http://127.0.0.1:5000/api/analyze-link';
+      body=JSON.stringify({url: inputUrl});
+    } else {
+      // ── TEXT / SCREENSHOT PIPELINE ──
+      endpoint='http://127.0.0.1:5000/api/analyze';
+      body=JSON.stringify({text: text || '[Screenshot submitted — unable to extract text client-side]', image: image});
+    }
+
+    const res=await fetch(endpoint,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body
+    });
+    const result=await res.json();
+    if(result.error) throw new Error(result.error);
+    done();
+    renderResults(result, isUrl);
+  }catch(e){
+    console.error(e);
+    done();
+    alert('Analysis failed: '+(e.message||'Server unreachable. Is the NewsGuard server running on port 5000?'));
+  }
+}
+
+function demo(){return{trustScore:34,verdict:"MISLEADING",riskLevel:"HIGH",riskPercent:72,signals:[{name:"Source Credibility",value:"Unknown / Unverified source",status:"fail",icon:"🌐"},{name:"Emotional Language",value:"High sensationalism detected",status:"fail",icon:"🎭"},{name:"Factual Consistency",value:"Multiple contradictions found",status:"warn",icon:"📋"},{name:"Author Verification",value:"Author identity unconfirmed",status:"fail",icon:"👤"},{name:"Publication Date",value:"Recycled old content (2021)",status:"warn",icon:"📅"}],claims:[{text:"Claims 300% increase — contradicts WHO data directly.",status:"false"},{text:"Referenced study from 'unnamed university' cannot be located.",status:"unverified"},{text:"Geographic location matches known event timeline.",status:"verified"}],sources:[{name:"Snopes",description:"Related claim rated Mostly False",icon:"🔍",url:"#"},{name:"Reuters Fact Check",description:"No corroborating evidence found",icon:"📰",url:"#"},{name:"WHO Database",description:"Official statistics contradict claim",icon:"🏥",url:"#"}],countries:[{flag:"🇺🇸",name:"United States",trust:82},{flag:"🇮🇳",name:"India",trust:74},{flag:"🇬🇧",name:"United Kingdom",trust:88},{flag:"🇩🇪",name:"Germany",trust:91}],explanation:"This content exhibits multiple hallmarks of misinformation: emotionally charged language designed to provoke sharing, unverifiable citations, and statistical claims that contradict established databases. The headline uses classic clickbait framing while the body presents cherry-picked data. Cross-referencing with major fact-checking organizations reveals this narrative has been circulating since 2021 with no credible backing. Verify through trusted outlets before sharing."};}
+
+function renderResults(r, isUrl){
+  const sec=document.getElementById('results');
+  sec.style.display='block'; sec.classList.add('visible');
+  sec.scrollIntoView({behavior:'smooth',block:'start'});
+
+  // ── Normalise fields across both endpoint schemas ──────────────────────────
+  // /api/analyze returns: credibility_score, verdict, risk_level, summary, red_flags, green_flags, metrics, recommendation
+  // /api/analyze-link returns: confidence_score, source_credibility_score, verdict, risk_level, fact_check_summary, key_claims, misinformation_signals, source_trust_db, content_extracted
+  const score = isUrl
+    ? Math.round((r.confidence_score||0)*0.5 + (r.source_credibility_score||0)*0.5)
+    : (r.credibility_score||0);
+  const riskLevel = (r.risk_level||'').toUpperCase();
+  const verdictRaw = (r.verdict||'').toUpperCase();
+  const explanation = isUrl
+    ? (r.fact_check_summary || r.recommendation_text || 'Analysis complete.')
+    : (r.summary || r.recommendation || 'Analysis complete.');
+
+  // ── Trust Score ring ──────────────────────────────────────────────────────
+  const off=283-((score/100)*283);
+  const col=score>=60?'#00FFC6':score>=40?'#FF9B42':'#FF4D6D';
+  const ring=document.getElementById('progress-ring');
+  ring.style.stroke=col; ring.style.strokeDashoffset=off;
+  const ne=document.getElementById('score-number'); ne.style.color=col;
+  animN(ne,0,score,1400);
+
+  // ── Status badge ──────────────────────────────────────────────────────────
+  const badge=document.getElementById('status-badge'); badge.className='status-badge';
+  if(/TRUE|CREDIBLE|LIKELY TRUE|SAFE/.test(verdictRaw)){badge.classList.add('real');badge.innerHTML='✓ CREDIBLE';}
+  else if(/FALSE|FAKE|LIKELY FALSE/.test(verdictRaw)){badge.classList.add('fake');badge.innerHTML='✕ LIKELY FALSE';}
+  else if(/MISLEADING|SUSPICIOUS|POSSIBLY/.test(verdictRaw)){badge.classList.add('fake');badge.innerHTML='⚠ MISLEADING';}
+  else{badge.classList.add('uncertain');badge.innerHTML='⚠ '+(r.verdict||'UNVERIFIED');}
+
+  const riskPct = riskLevel==='LOW'||riskLevel==='SAFE' ? 15 : riskLevel==='MEDIUM' ? 52 : 88;
+  document.getElementById('verdict-text').textContent=`Risk: ${r.risk_level||'UNKNOWN'} · Score: ${score}%`;
+  const rf=document.getElementById('risk-fill');
+  rf.style.background=(riskLevel==='LOW'||riskLevel==='SAFE')?'#00FFC6':riskLevel==='MEDIUM'?'#FF9B42':'#FF4D6D';
+  setTimeout(()=>{rf.style.width=riskPct+'%';},200);
+
+  // ── Credibility Signals ───────────────────────────────────────────────────
+  const sList=document.getElementById('signals-list');
+  sList.innerHTML='';
+  let signals=[];
+  if(isUrl){
+    // Build signals from source_trust_db + misinformation_signals + content_extracted
+    const trust=r.source_trust_db||{};
+    if(trust.score!==undefined) signals.push({icon:'🌐',name:'Source Trust Database',val:`${trust.score}/100 · ${trust.category||''} · ${trust.bias||''}`,status:trust.score>=70?'good':trust.score>=45?'neutral':'bad'});
+    if(r.content_extracted?.title) signals.push({icon:'📰',name:'Article Extracted',val:r.content_extracted.title.slice(0,60)||'',status:'good'});
+    if(r.content_extracted?.author) signals.push({icon:'👤',name:'Author',val:r.content_extracted.author,status:'good'});
+    if(r.content_extracted?.publishDate) signals.push({icon:'📅',name:'Published',val:r.content_extracted.publishDate.slice(0,10),status:'neutral'});
+    (r.misinformation_signals||[]).slice(0,4).forEach(s=>signals.push({icon:'⚠️',name:'Misinformation Signal',val:s,status:'bad'}));
+    if(!signals.length) signals.push({icon:'✅',name:'No Red Flags Detected',val:'Source appears reliable',status:'good'});
+  } else {
+    // red_flags + green_flags from /api/analyze
+    (r.red_flags||[]).forEach(f=>signals.push({icon:'🚩',name:f.label||'Red Flag',val:f.explanation||'',status:'bad'}));
+    (r.green_flags||[]).forEach(f=>signals.push({icon:'✅',name:f.label||'Green Flag',val:f.explanation||'',status:'good'}));
+    if(r.metrics){
+      const m=r.metrics;
+      if(m.sensationalism!==undefined) signals.push({icon:'🎭',name:'Sensationalism',val:`${m.sensationalism}/100`,status:m.sensationalism>60?'bad':m.sensationalism>30?'neutral':'good'});
+      if(m.factual_consistency!==undefined) signals.push({icon:'📋',name:'Factual Consistency',val:`${m.factual_consistency}/100`,status:m.factual_consistency<40?'bad':m.factual_consistency<70?'neutral':'good'});
+    }
+    if(!signals.length) signals.push({icon:'⏳',name:'No signals returned',val:'',status:'neutral'});
+  }
+  signals.forEach(sig=>{
+    const div=document.createElement('div'); div.className='signal-item';
+    div.innerHTML=`<div class="signal-icon ${sig.status}">${sig.icon}</div><div class="signal-meta"><div class="signal-name">${sig.name}</div><div class="signal-val">${sig.val}</div></div><span class="signal-badge ${sig.status==='good'?'pass':sig.status==='bad'?'fail':'warn'}">${sig.status==='good'?'PASS':sig.status==='bad'?'FAIL':'WARN'}</span>`;
+    sList.appendChild(div);
+  });
+
+  // ── Detected Claims ───────────────────────────────────────────────────────
+  const cList=document.getElementById('claims-list');
+  cList.innerHTML='';
+  const claims = isUrl ? (r.key_claims||[]) : (r.red_flags||[]).map(f=>({claim:f.label,status:'disputed',explanation:f.explanation}));
+  if(claims.length){
+    claims.forEach(c=>{
+      const statusKey = (c.status||'unverified').toLowerCase();
+      const div=document.createElement('div');
+      div.className=`claim-item ${statusKey==='verified'?'verified':statusKey==='false'||statusKey==='disputed'?'false':'unverified'}`;
+      div.innerHTML=`<div class="claim-status ${statusKey==='verified'?'verified':statusKey==='false'||statusKey==='disputed'?'false':'unverified'}">${(c.status||'UNVERIFIED').toUpperCase()}</div>${c.claim||c.text||''} ${c.explanation?`<span style="color:var(--muted);font-size:.75rem">— ${c.explanation}</span>`:''}` ;
+      cList.appendChild(div);
+    });
+  } else {
+    cList.innerHTML='<div style="color:var(--muted);font-size:.82rem">No specific claims extracted.</div>';
+  }
+
+  // ── AI Explanation ────────────────────────────────────────────────────────
+  const expEl=document.getElementById('explanation-text');
+  expEl.textContent=explanation;
+  if(isUrl && r.recommendation){
+    const recBadge=document.createElement('div');
+    recBadge.style.cssText='display:inline-flex;align-items:center;gap:6px;margin-top:.7rem;padding:5px 14px;border-radius:100px;font-size:.77rem;font-weight:700;letter-spacing:.05em';
+    const rec=(r.recommendation||'').toUpperCase();
+    recBadge.style.background=rec==='SHARE'?'rgba(0,255,198,.12)':rec==='DO NOT SHARE'?'rgba(255,77,109,.12)':'rgba(255,155,66,.12)';
+    recBadge.style.color=rec==='SHARE'?'var(--teal)':rec==='DO NOT SHARE'?'var(--red)':'var(--orange)';
+    recBadge.style.border=`1px solid ${rec==='SHARE'?'rgba(0,255,198,.25)':rec==='DO NOT SHARE'?'rgba(255,77,109,.25)':'rgba(255,155,66,.25)'}`;
+    recBadge.textContent='🔁 Recommendation: '+(r.recommendation||'VERIFY');
+    expEl.parentNode.appendChild(recBadge);
+  }
+
+  // ── Fact-Check Sources ────────────────────────────────────────────────────
+  const srcl=document.getElementById('source-list');
+  srcl.innerHTML='';
+  // Collect URLs from nested newsapi/gnews articles inside pipeline context (not directly returned)
+  // For URL pipeline: show og:site_name as primary, plus recommendation text
+  const sourceLinks = r.verified_sources || [];
+  if(isUrl && r.source_trust_db){
+    const t=r.source_trust_db;
+    const si=document.createElement('div');
+    si.className='source-item';
+    si.style.border=`1px solid ${t.score>=70?'rgba(0,255,198,.22)':t.score>=45?'rgba(255,155,66,.22)':'rgba(255,77,109,.22)'}`;
+    si.innerHTML=`<div class="source-favicon">${t.score>=70?'✅':t.score>=45?'⚠️':'❌'}</div><div style="flex:1"><div class="source-name">${r.content_extracted?.title||t.domain||'Source Analysis'}</div><div class="source-desc">${t.category} · ${t.bias} bias · Trust: ${t.score}/100 · ${t.notes}</div></div>`;
+    srcl.appendChild(si);
+  }
+  sourceLinks.forEach(href=>{
+    const el=document.createElement('a');
+    el.className='source-item'; el.href=href; el.target='_blank';
+    try{ const u=new URL(href);
+      el.innerHTML=`<div class="source-favicon">🌐</div><div style="flex:1"><div class="source-name" style="color:var(--teal)">${u.hostname.replace('www.','')}</div><div class="source-desc" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;font-size:.72rem">${href}</div></div>`;
+      srcl.appendChild(el);
+    } catch(e){}
+  });
+  if(!srcl.children.length) srcl.innerHTML='<div style="color:var(--muted);font-size:.82rem">No external sources returned.</div>';
+
+  // ── Regional strip: clear / placeholder ──────────────────────────────────
+  document.getElementById('country-strip').innerHTML='<div style="color:var(--muted);font-size:.75rem">Engine: '+((r._ai_engine||'AI').charAt(0).toUpperCase()+(r._ai_engine||'AI').slice(1))+' · Sources checked: '+(r.sources_checked||1)+'</div>';
+
+  // ── Similarity Panel ──────────────────────────────────────────────────────
+  renderSimilarity(r.similarity);
+}
+
+function renderSimilarity(sim) {
+  const card = document.getElementById('sim-card');
+  if (!sim || !sim.verdict || sim.verdict === 'UNAVAILABLE') {
+    card.style.display = 'none';
+    return;
+  }
+
+  card.style.display = '';
+
+  // ── Verdict Badge ──
+  const badge = document.getElementById('sim-verdict-badge');
+  const VERDICTS = {
+    'LIKELY_REAL':         { cls: 'likely-real', label: '✅ LIKELY REAL — Similar verified article found' },
+    'PARTIALLY_SIMILAR':   { cls: 'partial',     label: '🔶 PARTIALLY SIMILAR — Weak match found' },
+    'SUSPICIOUS':          { cls: 'suspicious',  label: '🚨 SUSPICIOUS — No similar verified article' },
+    'INSUFFICIENT_TEXT':   { cls: 'partial',     label: '⚠️ INSUFFICIENT TEXT' },
+  };
+  const vInfo = VERDICTS[sim.verdict] || { cls: 'partial', label: sim.verdict };
+  badge.className = 'sim-verdict-badge ' + vInfo.cls;
+  badge.textContent = vInfo.label;
+
+  // ── Score pill ──
+  document.getElementById('sim-score-pill').textContent = (sim.max_pct || 0).toFixed(1) + '% match';
+
+  // ── Explanation ──
+  document.getElementById('sim-explanation').textContent = sim.explanation || '—';
+
+  // ── Top Matches ──
+  const matchesEl = document.getElementById('sim-matches');
+  const topMatches = sim.top_matches || [];
+  if (!topMatches.length) {
+    matchesEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">No similar articles found in knowledge base.</div>';
+  } else {
+    matchesEl.innerHTML = topMatches.map((m, i) => {
+      const pct = (m.pct || m.score * 100 || 0).toFixed(1);
+      const barW = Math.min((m.score || 0) * 300, 100).toFixed(0); // scale for visibility
+      const catEmojis = { science:'🔬', health:'🏥', technology:'💻', politics:'🏛️', economy:'📈', climate:'🌍', world:'🌐', finance:'💰', sports:'⚽', environment:'🌿' };
+      const catEmoji = catEmojis[m.category] || '📰';
+      return `<div class="sim-match-item">
+        <div class="sim-match-top">
+          <div class="sim-match-title">${catEmoji} ${m.title || 'Unknown'}</div>
+          <div class="sim-match-pct">${pct}%</div>
+        </div>
+        <div class="sim-match-meta">
+          <span>📰 ${m.source || 'unknown'}</span>
+          ${m.date ? `<span>📅 ${m.date.slice(0,10)}</span>` : ''}
+          ${m.category ? `<span>🏷️ ${m.category}</span>` : ''}
+        </div>
+        <div class="sim-match-bar"><div class="sim-match-fill" data-w="${barW}%" style="width:0%"></div></div>
+      </div>`;
+    }).join('');
+    // Animate bars
+    setTimeout(() => {
+      matchesEl.querySelectorAll('.sim-match-fill').forEach(el => {
+        el.style.width = el.dataset.w;
+      });
+    }, 150);
+  }
+
+  // ── Footer ──
+  document.getElementById('sim-engine-label').textContent = sim.engine || 'TF-IDF + Cosine Similarity';
+  document.getElementById('sim-kb-label').textContent = `KB: ${sim.kb_size || '—'} verified articles`;
+}
+
+function animN(el,from,to,dur){
+  const s=performance.now();
+  (function step(n){
+    const p=Math.min((n-s)/dur,1), e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(to-from)*e);
+    if(p<1) requestAnimationFrame(step);
+  })(s);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SOURCE RELIABILITY CHECKER
+// ═══════════════════════════════════════════════════════════════════════
+
+const TIER_COLORS = {
+  1: { color:'#10b981', bg:'rgba(16,185,129,0.15)', label:'Highly Trusted' },
+  2: { color:'#3b82f6', bg:'rgba(59,130,246,0.15)',  label:'Generally Trusted' },
+  3: { color:'#f59e0b', bg:'rgba(245,158,11,0.15)',  label:'Mixed Reliability' },
+  4: { color:'#ef4444', bg:'rgba(239,68,68,0.15)',   label:'Unreliable' },
+  0: { color:'#8b5cf6', bg:'rgba(139,92,246,0.15)',  label:'Unknown' },
+};
+
+async function checkSourceReliability() {
+  const input   = document.getElementById('src-url-input');
+  const btn     = document.getElementById('src-check-btn');
+  const btnText = document.getElementById('src-btn-text');
+  const url     = input.value.trim();
+
+  if (!url) { input.focus(); input.style.borderColor='var(--red)'; setTimeout(()=>input.style.borderColor='',800); return; }
+
+  btn.disabled = true;
+  btnText.textContent = 'Checking...';
+
+  try {
+    const resp = await fetch('/api/check-source', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    renderSourceResult(data);
+  } catch (err) {
+    alert('Error: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btnText.textContent = 'Check Source';
+  }
+}
+
+function quickCheck(url) {
+  document.getElementById('src-url-input').value = url;
+  checkSourceReliability();
+  document.getElementById('source-checker').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function renderSourceResult(data) {
+  const panel = document.getElementById('src-result-panel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+
+  const tier    = data.tier || 0;
+  const tc      = TIER_COLORS[tier] || TIER_COLORS[0];
+  const score   = data.finalScore || 0;
+
+  // ── Gauge ──
+  animateGauge(score, tc.color);
+  document.getElementById('src-gauge-verdict').textContent = data.verdict || '—';
+  document.getElementById('src-gauge-verdict').style.color = tc.color;
+  document.getElementById('src-gauge-tier').textContent = tc.label.toUpperCase();
+
+  // ── Tier badge ──
+  const badge = document.getElementById('src-tier-badge');
+  const tierEmojis = {1:'✅',2:'🔵',3:'⚠️',4:'🚨',0:'❓'};
+  badge.textContent = `${tierEmojis[tier]||'❓'} Tier ${tier}`;
+  badge.style.color = tc.color;
+  badge.style.borderColor = tc.color;
+  badge.style.background = tc.bg;
+
+  // ── Domain info ──
+  const di = data.domainInfo || {};
+  document.getElementById('src-domain-flag').textContent = di.flag || '🌐';
+  document.getElementById('src-domain-name').textContent = data.domain || '—';
+  document.getElementById('src-meta-category').textContent = di.category || '—';
+  document.getElementById('src-meta-bias').textContent = di.bias || '—';
+  document.getElementById('src-meta-https').textContent = data.isHttps ? '🔒 Yes' : '⚠️ No';
+  document.getElementById('src-meta-indb').textContent = di.inDb ? '✅ Yes' : '❌ No';
+  document.getElementById('src-domain-notes').textContent = di.notes || 'No additional notes.';
+  document.getElementById('src-recommendation').textContent = data.recommendation || '';
+
+  // ── Breakdown rows ──
+  const grid = document.getElementById('src-breakdown-grid');
+  grid.innerHTML = '';
+  (data.breakdown || []).forEach(b => {
+    const pts = parseInt(b.points);
+    const cls = pts > 0 ? 'src-br-positive' : pts < 0 ? 'src-br-negative' : 'src-br-neutral';
+    const barColor = pts > 0 ? '#10b981' : pts < 0 ? '#ef4444' : 'rgba(255,255,255,0.2)';
+    const barWidth = Math.abs(pts) > 0 ? Math.min(Math.abs(pts) / 40 * 100, 100) : 0;
+    const row = document.createElement('div');
+    row.className = 'src-breakdown-row';
+    row.innerHTML = `
+      <div>
+        <div class="src-br-rule">${b.rule}</div>
+        <div class="src-br-detail">${b.detail || ''}</div>
+        <div class="src-br-bar" style="margin-top:5px">
+          <div class="src-br-fill" style="width:0%;background:${barColor}" data-w="${barWidth}%"></div>
+        </div>
+      </div>
+      <div class="src-br-points ${cls}">${b.points}</div>
+    `;
+    grid.appendChild(row);
+    // Animate bar
+    setTimeout(()=>{ const fill=row.querySelector('.src-br-fill'); if(fill) fill.style.width=fill.dataset.w; }, 100);
+  });
+
+  // Final row (total)
+  const totalRow = document.createElement('div');
+  totalRow.className = 'src-breakdown-row';
+  totalRow.style.background = tc.bg;
+  totalRow.style.borderColor = tc.color;
+  totalRow.innerHTML = `
+    <div><div class="src-br-rule" style="color:${tc.color};font-weight:700">🏁 FINAL TRUST SCORE</div></div>
+    <div class="src-br-points" style="color:${tc.color};font-size:1.1rem">${score}</div>
+  `;
+  grid.appendChild(totalRow);
+
+  // ── Sensational words ──
+  const sw = data.sensationalHits || [];
+  const swWrap = document.getElementById('src-sensational-wrap');
+  if (sw.length > 0) {
+    swWrap.style.display = 'block';
+    const chips = document.getElementById('src-sensational-chips');
+    chips.innerHTML = sw.map(w => `<span class="src-sensational-chip">"${w}"</span>`).join('');
+  } else {
+    swWrap.style.display = 'none';
+  }
+}
+
+function animateGauge(score, color) {
+  const arc    = document.getElementById('src-gauge-arc');
+  const numEl  = document.getElementById('src-gauge-num');
+  const total  = 251.2;    // full arc circumference
+  const offset = total - (score / 100) * total;
+
+  arc.style.stroke = color;
+  // Reset then animate
+  arc.style.strokeDashoffset = total;
+  setTimeout(() => { arc.style.strokeDashoffset = offset; }, 50);
+
+  // Animate number
+  let current = 0;
+  const startTime = performance.now();
+  const dur = 1200;
+  (function step(now) {
+    const p = Math.min((now - startTime) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    numEl.textContent = Math.round(ease * score);
+    if (p < 1) requestAnimationFrame(step);
+  })(startTime);
+}
+
+// ── Source Directory ──────────────────────────────────────────────────────
+let currentTier = 1;
+
+async function loadSourceDirectory() {
+  try {
+    const resp = await fetch('/api/source-db?tier=' + currentTier);
+    const data = await resp.json();
+    if (data.total) {
+      document.getElementById('src-dir-count').textContent = data.total + ' Sources';
+    }
+    renderDomainGrid(data.entries || []);
+  } catch {
+    // If server not running, show static fallback
+    renderDomainGridStatic();
+  }
+}
+
+function filterDir(btn, tier) {
+  document.querySelectorAll('.src-dir-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTier = tier;
+  loadSourceDirectory();
+}
+
+function renderDomainGrid(entries) {
+  const grid = document.getElementById('src-domain-grid');
+  if (!entries.length) { grid.innerHTML = '<div style="color:var(--muted);font-size:.85rem;grid-column:1/-1">No sources in this tier.</div>'; return; }
+  grid.innerHTML = entries.map(e => {
+    const tc = TIER_COLORS[e.tier || 0];
+    return `<div class="src-domain-tile" onclick="quickCheck('https://${e.domain}')">
+      <div class="src-tile-top">
+        <span class="src-tile-flag">${e.flag || '🌐'}</span>
+        <span class="src-tile-score" style="color:${tc.color};background:${tc.bg}">${e.score}</span>
+      </div>
+      <div class="src-tile-domain">${e.domain}</div>
+      <div class="src-tile-cat">${e.category || ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDomainGridStatic() {
+  // Fallback static list when server is offline
+  const STATIC = {
+    1: [
+      {domain:'reuters.com',flag:'🌐',score:97,category:'Wire Service'},
+      {domain:'apnews.com',flag:'🌐',score:96,category:'Wire Service'},
+      {domain:'bbc.com',flag:'🇬🇧',score:93,category:'Public Broadcaster'},
+      {domain:'who.int',flag:'🌍',score:95,category:'Intl Org'},
+      {domain:'nature.com',flag:'🔬',score:98,category:'Science Journal'},
+      {domain:'snopes.com',flag:'✅',score:90,category:'Fact-Checker'},
+      {domain:'factcheck.org',flag:'✅',score:91,category:'Fact-Checker'},
+      {domain:'ndtv.com',flag:'🇮🇳',score:73,category:'Indian News'},
+      {domain:'thehindu.com',flag:'🇮🇳',score:78,category:'Indian Newspaper'},
+      {domain:'boomlive.in',flag:'🇮🇳',score:86,category:'Fact-Checker'},
+      {domain:'pib.gov.in',flag:'🇮🇳',score:88,category:'Indian Gov'},
+      {domain:'nasa.gov',flag:'🏛️',score:95,category:'Government Science'},
+    ],
+    2: [
+      {domain:'nytimes.com',flag:'🇺🇸',score:82,category:'Newspaper'},
+      {domain:'theguardian.com',flag:'🇬🇧',score:79,category:'Newspaper'},
+      {domain:'bloomberg.com',flag:'🇺🇸',score:80,category:'Business Media'},
+      {domain:'indianexpress.com',flag:'🇮🇳',score:76,category:'Indian Newspaper'},
+      {domain:'scroll.in',flag:'🇮🇳',score:72,category:'Digital Media'},
+      {domain:'aljazeera.com',flag:'🌐',score:72,category:'News Channel'},
+    ],
+    3: [
+      {domain:'foxnews.com',flag:'🇺🇸',score:55,category:'Cable News'},
+      {domain:'dailymail.co.uk',flag:'🇬🇧',score:45,category:'Tabloid'},
+      {domain:'opindia.com',flag:'🇮🇳',score:42,category:'Online Media'},
+      {domain:'theonion.com',flag:'😂',score:50,category:'Satire'},
+    ],
+    4: [
+      {domain:'infowars.com',flag:'🚨',score:5,category:'Conspiracy'},
+      {domain:'naturalnews.com',flag:'🚨',score:8,category:'Pseudoscience'},
+      {domain:'beforeitsnews.com',flag:'🚨',score:10,category:'Conspiracy'},
+      {domain:'postcard.news',flag:'🚨',score:20,category:'Misinformation'},
+    ]
+  };
+  renderDomainGrid((STATIC[currentTier]||[]).map(e=>({...e,tier:currentTier})));
+}
+
+// ── Enter key support ──
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('src-url-input');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkSourceReliability(); });
+  loadSourceDirectory();
+});
+</script>
+
+</body>
+</html>

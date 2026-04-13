@@ -1,0 +1,11 @@
+{
+  "model_name": "Logistic Regression",
+  "accuracy": 1.0,
+  "f1_score": 1.0,
+  "auc_roc": 1.0,
+  "vocab_size": 1142,
+  "n_train": 800,
+  "n_test": 200,
+  "trained_at": "2026-04-11T23:35:20",
+  "version": "2.0"
+}

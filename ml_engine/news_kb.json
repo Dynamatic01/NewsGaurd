@@ -1,0 +1,542 @@
+[
+  {
+    "id": "r001",
+    "title": "Federal Reserve raises interest rates by 25 basis points to combat inflation",
+    "text": "The Federal Reserve raised its benchmark interest rate by a quarter of a percentage point on Wednesday, continuing its campaign to bring down inflation that remains above its 2% target. The rate increase brings the federal funds rate to a range of 5.25% to 5.5%. Fed Chair Jerome Powell said the central bank will remain data-dependent and could raise rates further if needed. The US economy added 209,000 jobs last month, beating expectations. Inflation has cooled from a peak of 9.1% in June 2022 to around 3.2%, but policymakers want to see more progress before declaring victory.",
+    "source": "reuters.com",
+    "date": "2024-07-26",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r002",
+    "title": "NASA confirms water ice found near Moon south pole by LCROSS mission",
+    "text": "NASA scientists have confirmed the presence of water ice in the permanently shadowed craters near the Moon's south pole. The LCROSS mission deliberately crashed a spacecraft into the Cabeus crater and analysis of the plume revealed about 5.6% water ice by mass. This discovery is significant for future lunar exploration as water can be used to produce drinking water, oxygen for breathing, and hydrogen for rocket propellant. The findings were published in the journal Science and represent a major step towards sustainable human presence on the Moon.",
+    "source": "nasa.gov",
+    "date": "2009-11-13",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r003",
+    "title": "COVID-19 vaccines highly effective against severe disease and hospitalisation",
+    "text": "Studies published in the New England Journal of Medicine and The Lancet confirm that mRNA vaccines from Pfizer-BioNTech and Moderna are highly effective at preventing severe COVID-19 disease, hospitalisation and death. Vaccine effectiveness against hospitalisation ranges from 87% to 95% across multiple population groups. Researchers analysed data from millions of patients across the United States, United Kingdom and Israel. The CDC and WHO both recommend vaccination as the most important tool to end the pandemic. Booster doses provide additional protection especially against new variants.",
+    "source": "who.int",
+    "date": "2021-09-01",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r004",
+    "title": "India launches Chandrayaan-3 mission to Moon with lander and rover",
+    "text": "India's space agency ISRO successfully launched the Chandrayaan-3 lunar mission on a LVM3 rocket from the Satish Dhawan Space Centre. The mission includes a lander named Vikram and a rover named Pragyan which will attempt to land near the Moon's south pole. This follows the partial success of Chandrayaan-2 in 2019 when the lander crashed during descent. If successful India will become the fourth country to achieve a soft landing on the Moon after the United States Soviet Union and China. The mission cost approximately 75 million US dollars.",
+    "source": "isro.gov.in",
+    "date": "2023-07-14",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r005",
+    "title": "Apple reports record quarterly revenue of 90 billion dollars driven by iPhone sales",
+    "text": "Apple Inc reported record quarterly revenue of 90.1 billion dollars for the fiscal first quarter beating analyst expectations of 84 billion dollars. iPhone sales rose to 65.8 billion dollars up from 57.8 billion in the same period last year. Services revenue also hit a record at 20.9 billion dollars. CEO Tim Cook said strong iPhone demand particularly in emerging markets drove the results. The company returned 25 billion dollars to shareholders through dividends and buybacks. Apple shares rose 3% in after-hours trading following the earnings report.",
+    "source": "reuters.com",
+    "date": "2024-02-01",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r006",
+    "title": "WHO declares end of COVID-19 global health emergency after three years",
+    "text": "The World Health Organization declared an end to COVID-19 as a global health emergency on Friday after more than three years during which the pandemic killed millions of people worldwide and caused unprecedented economic disruption. WHO Director General Tedros Adhanom Ghebreyesus said the virus remains a health threat and countries must maintain surveillance and vaccination programmes. The emergency status first declared in January 2020 allowed the WHO to coordinate the global response and accelerate vaccine development. More than 13 billion vaccine doses have been administered globally.",
+    "source": "who.int",
+    "date": "2023-05-05",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r007",
+    "title": "Supreme Court overturns Roe v. Wade ending constitutional right to abortion in United States",
+    "text": "The United States Supreme Court overturned Roe v. Wade in a 6-3 decision on Friday eliminating the constitutional right to abortion that had been in place for nearly 50 years. The ruling in Dobbs v. Jackson Women's Health Organization returns the authority to regulate abortion to individual states. Justice Samuel Alito wrote the majority opinion saying the 1973 ruling was egregiously wrong. Within hours of the ruling several states with trigger laws moved to ban or restrict abortion. President Biden called the decision a realization of an extreme ideology and a tragic error.",
+    "source": "apnews.com",
+    "date": "2022-06-24",
+    "category": "politics",
+    "label": "real"
+  },
+  {
+    "id": "r008",
+    "title": "Russia invades Ukraine in major escalation as troops cross border",
+    "text": "Russian President Vladimir Putin launched a full-scale military invasion of Ukraine on Thursday with explosions heard in multiple cities including Kyiv Kharkiv and Mariupol. Putin announced a special military operation in a pre-dawn television address citing the need to demilitarise and denazify Ukraine. Ukrainian President Volodymyr Zelensky declared martial law and urged citizens to take up arms. The United Nations Security Council held an emergency meeting with Western nations condemning the attack. The US EU and UK announced sweeping new sanctions against Russia in response to the invasion.",
+    "source": "bbc.com",
+    "date": "2022-02-24",
+    "category": "politics",
+    "label": "real"
+  },
+  {
+    "id": "r009",
+    "title": "OpenAI releases GPT-4 with improved reasoning and multimodal capabilities",
+    "text": "OpenAI released GPT-4 its most powerful AI language model to date which can process both text and images as inputs. The company says GPT-4 performs at a human level on various professional and academic benchmarks including passing the bar exam in the top 10 percentile. The model shows improved reasoning factual accuracy and safety compared to its predecessor GPT-3.5. Microsoft has integrated GPT-4 into its Bing search engine and other products. OpenAI CEO Sam Altman said the system still has limitations and the company is working on alignment and safety research.",
+    "source": "theverge.com",
+    "date": "2023-03-14",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r010",
+    "title": "Global temperatures hit record high in 2023 with June July hottest months ever recorded",
+    "text": "The year 2023 was confirmed as the hottest on record with global average temperatures exceeding pre-industrial levels by 1.45 degrees Celsius according to the EU Copernicus Climate Change Service. June July and August of 2023 were each the hottest months recorded in human history. Scientists attribute the record-breaking heat to a combination of human-caused climate change and the El Nino weather pattern. The findings intensify calls for faster action to reduce greenhouse gas emissions at the upcoming COP28 climate summit. Antarctic sea ice also hit a record low in 2023.",
+    "source": "reuters.com",
+    "date": "2024-01-09",
+    "category": "climate",
+    "label": "real"
+  },
+  {
+    "id": "r011",
+    "title": "India overtakes China to become world most populous country with 1.4 billion people",
+    "text": "India has surpassed China to become the world most populous country with an estimated 1.4286 billion people according to United Nations data. The UN Population Fund said India would continue to grow while China population is expected to decline due to its ageing population and low birth rate. India population is significantly younger than China with a median age of 28 compared to 38 in China. This demographic advantage could boost India economic growth if the country can create enough jobs for its working-age population. India is expected to remain the most populous country through the rest of this century.",
+    "source": "bbc.com",
+    "date": "2023-04-19",
+    "category": "world",
+    "label": "real"
+  },
+  {
+    "id": "r012",
+    "title": "Bitcoin price surges past 70000 dollars reaching new all-time high",
+    "text": "Bitcoin surged to a new all-time high above 70000 dollars on Thursday driven by strong inflows into newly approved US spot Bitcoin ETFs and the upcoming halving event in April. BlackRock iShares Bitcoin Trust and other ETFs saw record daily inflows of over 1 billion dollars combined. Analysts say the halving which cuts the rate of new Bitcoin creation in half historically precedes major bull markets. The total market capitalisation of cryptocurrencies surpassed 2.6 trillion dollars. Ethereum and other altcoins also saw significant gains following Bitcoin rally.",
+    "source": "reuters.com",
+    "date": "2024-03-12",
+    "category": "finance",
+    "label": "real"
+  },
+  {
+    "id": "r013",
+    "title": "Climate activists Greta Thunberg arrested at anti-coal protest in Germany",
+    "text": "Swedish climate activist Greta Thunberg was briefly arrested by German police on Tuesday during a demonstration against the expansion of a coal mine in the Luetzerath area. Police said Thunberg and other protesters were detained after refusing to leave the area which was being cleared for coal mining. She was released later in the day. Thunberg said the fossil fuel industry is destroying our future and the German government must stop the coal expansion immediately. Germany has delayed its coal phase-out timeline due to the energy crisis sparked by Russia invasion of Ukraine.",
+    "source": "theguardian.com",
+    "date": "2023-01-17",
+    "category": "climate",
+    "label": "real"
+  },
+  {
+    "id": "r014",
+    "title": "Scientists develop new cancer drug that shrinks tumors in 80 percent of patients",
+    "text": "Researchers at Memorial Sloan Kettering Cancer Center published results of a clinical trial showing a new immunotherapy drug combination achieved an 80% response rate in patients with advanced colorectal cancer. The trial involved 18 patients with mismatch repair deficient rectal cancer who received pembrolizumab immunotherapy for six months. All 18 patients showed complete clinical response meaning no detectable cancer and avoided surgery radiation and chemotherapy. The findings were published in the New England Journal of Medicine. Oncologists called the results remarkable and unprecedented.",
+    "source": "nejm.org",
+    "date": "2022-06-05",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r015",
+    "title": "Tesla recalls 2 million vehicles over autopilot safety concerns",
+    "text": "Tesla is recalling nearly all 2 million vehicles sold in the United States that have the Autopilot driver assistance system installed following a two-year investigation by the National Highway Traffic Safety Administration. NHTSA said the Autopilot system does not ensure drivers maintain sufficient attention while using automated features. The recall affects Model S Model X Model 3 and Model Y vehicles. Tesla will issue an over-the-air software update to add additional controls and alerts to improve the system. The recall does not require owners to take vehicles to a dealer.",
+    "source": "apnews.com",
+    "date": "2023-12-13",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r016",
+    "title": "Amazon lays off 18000 employees in largest round of cuts in company history",
+    "text": "Amazon announced it will cut approximately 18000 positions mostly from its corporate and technology workforce making it the largest single round of layoffs in the company 28-year history. CEO Andy Jassy said the company grew too fast during the pandemic and is now rightsizing to focus on profitability. The layoffs primarily affect Amazon Stores and People Experience and Technology divisions. The cuts come as Amazon faces slowing e-commerce growth lower advertising revenue and high costs from its rapid pandemic expansion. Several other major tech companies including Microsoft Google and Meta also announced significant layoffs.",
+    "source": "wsj.com",
+    "date": "2023-01-04",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r017",
+    "title": "Narendra Modi wins India general election for third consecutive term",
+    "text": "Indian Prime Minister Narendra Modi and his Bharatiya Janata Party won the 2024 general election securing a third consecutive term in power though the BJP fell short of an outright majority for the first time in 10 years. The BJP won approximately 240 seats in the 543-seat Lok Sabha Parliament seat count down from 303 in 2019. Modi will form a coalition government with alliance partners from the National Democratic Alliance. Congress party led by Rahul Gandhi increased its seat count to around 99 seats. The election saw a voter turnout of approximately 66% across the country.",
+    "source": "ndtv.com",
+    "date": "2024-06-04",
+    "category": "politics",
+    "label": "real"
+  },
+  {
+    "id": "r018",
+    "title": "World Bank cuts global growth forecast to 2.4 percent citing high interest rates",
+    "text": "The World Bank cut its forecast for global economic growth in 2024 to 2.4 percent from a previous estimate of 2.7 percent citing the impact of high interest rates tight financial conditions and slowing trade. The bank said it was the third consecutive year of deceleration and the slowest pace of growth in three decades excluding the COVID-19 pandemic and global financial crisis years. Developing countries are particularly affected by rising debt costs. The World Bank is calling for urgent policy action to boost productivity and private investment to prevent a lost decade of development.",
+    "source": "worldbank.org",
+    "date": "2024-01-09",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r019",
+    "title": "Pfizer COVID antiviral Paxlovid reduces hospitalisation by 89 percent in clinical trial",
+    "text": "Pfizer said its experimental COVID-19 antiviral treatment Paxlovid reduced hospitalisation and death by 89 percent in a clinical trial of unvaccinated adults at high risk of severe disease. The Phase 2-3 trial included 1219 patients across multiple countries who received either Paxlovid or placebo within three days of COVID symptoms starting. Of the 389 patients given Paxlovid only 3 were hospitalised compared to 27 of 385 in the placebo group. The FDA granted emergency use authorisation for Paxlovid in December 2021 for high-risk patients 12 and older.",
+    "source": "fda.gov",
+    "date": "2021-11-05",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r020",
+    "title": "Sam Altman returns as OpenAI CEO after board reverses decision to fire him",
+    "text": "OpenAI reversed course and reinstated Sam Altman as CEO just days after abruptly firing him in a shock move that sent the AI company into turmoil. The majority of OpenAI board members resigned as employees threatened to quit en masse and join Microsoft if Altman was not reinstated. Altman had been fired by the board citing a loss of confidence in his ability to lead citing failures to be consistently candid. Satya Nadella Microsoft CEO had offered Altman a position to lead a new AI division at Microsoft. OpenAI said a new initial board has been formed and an independent investigation will review the circumstances.",
+    "source": "theverge.com",
+    "date": "2023-11-22",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r021",
+    "title": "Elon Musk acquires Twitter for 44 billion dollars and takes company private",
+    "text": "Elon Musk completed his 44 billion dollar acquisition of Twitter on Thursday immediately firing chief executive Parag Agrawal and several other top executives. Musk entered Twitter headquarters carrying a kitchen sink in a reference to his joke about letting the kitchen sink in. Musk has said he wants to make Twitter a digital town square where free speech can flourish and plans to loosen content moderation rules. He has also said he wants to fight spam bots and add new features to verified accounts. The deal caps a months-long saga that included Musk trying to back out of the agreement before being forced by Delaware courts to close it.",
+    "source": "reuters.com",
+    "date": "2022-10-27",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r022",
+    "title": "James Webb Space Telescope captures deepest infrared image of universe",
+    "text": "NASA released the first images from the James Webb Space Telescope showing the deepest and sharpest infrared image of the distant universe ever captured. The image called Webb First Deep Field shows galaxy cluster SMACS 0723 as it appeared 4.6 billion years ago with thousands of distant galaxies in stunning clarity. President Biden unveiled the first image at the White House. Additional images showed exoplanet atmospheres stellar nurseries and merging galaxies. The telescope operated by NASA in partnership with European and Canadian space agencies launched on Christmas Day 2021.",
+    "source": "nasa.gov",
+    "date": "2022-07-11",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r023",
+    "title": "UK inflation falls to 2 percent target for first time in nearly three years",
+    "text": "UK inflation fell to the Bank of England 2 percent target in May for the first time since July 2021 according to the Office for National Statistics. The consumer price index dropped from 2.3 percent in April driven by slower rises in food prices and recreation and culture goods. Core inflation which excludes volatile food and energy prices also fell to 3.5 percent from 3.9 percent. The fall in inflation paves the way for the Bank of England to begin cutting interest rates. The base rate has been at 5.25 percent since August 2023 a 16-year high as the central bank battled the biggest inflation shock in decades.",
+    "source": "ft.com",
+    "date": "2024-06-19",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r024",
+    "title": "Scientists announce breakthrough in nuclear fusion achieving net energy gain at NIF",
+    "text": "Scientists at the National Ignition Facility in California announced a historic breakthrough in nuclear fusion achieving ignition for the first time by producing more energy from a fusion reaction than the laser energy used to initiate it. The experiment on December 5 2022 produced 3.15 megajoules of fusion energy output compared to 2.05 megajoules of laser energy delivered to the target. Energy Secretary Jennifer Granholm called it one of the most impressive scientific feats of the 21st century. Fusion generates no carbon emissions and produces minimal radioactive waste compared to fission.",
+    "source": "science.org",
+    "date": "2022-12-13",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r025",
+    "title": "WHO approves first malaria vaccine RTS,S for broad use in sub-Saharan Africa",
+    "text": "The World Health Organization recommended the widespread use of the RTS S malaria vaccine in sub-Saharan Africa marking a historic milestone in the decades-long quest to develop a vaccine against one of the world most deadly diseases. The vaccine developed by GlaxoSmithKline showed 30 percent efficacy in preventing malaria and 40 percent efficacy against severe malaria in children in clinical trials. Around 500000 children under five years of age die from malaria each year almost all in sub-Saharan Africa and more than 90 percent of those deaths occur in Africa.",
+    "source": "who.int",
+    "date": "2021-10-06",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r026",
+    "title": "Israel Hamas war erupts after Hamas launches surprise attack killing 1200 Israelis",
+    "text": "Palestinian militant group Hamas launched a surprise attack on southern Israel on Saturday killing approximately 1200 people mostly civilians and taking around 240 people hostage. Gunmen from Gaza infiltrated Israeli communities and a music festival near Kibbutz Re'im killing hundreds. Israel declared a state of war and launched a military response with airstrikes on Gaza and later a ground offensive. Prime Minister Benjamin Netanyahu vowed to destroy Hamas military and governing capabilities. The attack was the deadliest day for Jewish people since the Holocaust. The conflict sparked a major humanitarian crisis in Gaza.",
+    "source": "apnews.com",
+    "date": "2023-10-07",
+    "category": "world",
+    "label": "real"
+  },
+  {
+    "id": "r027",
+    "title": "Meta releases Llama 2 open source AI model for commercial use",
+    "text": "Meta released Llama 2 its next generation open source large language model family making it available for free commercial use. The models were trained on 2 trillion tokens of data and are available in 7 billion 13 billion and 70 billion parameter versions. Meta said Llama 2 outperforms other open source language models on most benchmarks and is designed to be a safer more helpful assistant. Microsoft is partnering with Meta to distribute Llama 2 through its Azure cloud platform. The release represents a significant moment in the AI landscape making competitive LLM technology available to developers and researchers.",
+    "source": "techcrunch.com",
+    "date": "2023-07-18",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r028",
+    "title": "India GDP grows 8.4 percent in third quarter becoming fastest growing major economy",
+    "text": "India gross domestic product grew 8.4 percent in the October to December quarter making it the fastest growing major economy in the world according to government data. The growth exceeded analyst estimates of 6.6 percent and accelerated from 7.6 percent in the previous quarter. Manufacturing grew 11.6 percent while construction expanded 9.5 percent. The strong data gives fiscal headroom to the government ahead of the 2024 general elections. India has emerged as a key destination for global manufacturing with major companies shifting supply chains away from China. The IMF projects India will be the third largest economy by 2030.",
+    "source": "livemint.com",
+    "date": "2024-02-29",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r029",
+    "title": "ChatGPT reaches 100 million users in two months fastest growing app in history",
+    "text": "ChatGPT the AI chatbot developed by OpenAI reached 100 million users in just two months after its launch in November 2022 making it the fastest growing consumer application in history according to a UBS study. For comparison TikTok took nine months to reach 100 million users and Instagram took 2.5 years. The chatbot can write essays compose code explain complex topics and engage in natural conversation. The explosion in interest has sparked massive investment in AI startups and accelerated development timelines at companies like Google Meta and Microsoft all of whom have announced competing products.",
+    "source": "reuters.com",
+    "date": "2023-02-01",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r030",
+    "title": "Pakistan cricket team wins ICC World Cup defeating India in final",
+    "text": "The Pakistan cricket team won the ICC Men's Cricket World Cup defeating rivals India in a thrilling final at the Melbourne Cricket Ground. Pakistan captain Babar Azam scored a magnificent century as Pakistan chased down a target of 268 with four wickets and two overs to spare. Pakistan fast bowler Shaheen Afridi took four wickets to dismiss India for 266. It was Pakistan first World Cup title since 1992. The match attracted a television audience of over 300 million viewers in South Asia making it one of the most watched sporting events in history. The tournament was held across Australia in October and November.",
+    "source": "espncricinfo.com",
+    "date": "2023-11-19",
+    "category": "sports",
+    "label": "real"
+  },
+  {
+    "id": "r031",
+    "title": "Europe hit by worst heatwave in history with temperatures reaching 47 degrees Celsius",
+    "text": "Europe experienced its worst heatwave on record with temperatures reaching above 47 degrees Celsius in parts of Spain and Portugal. London recorded its highest ever temperature of 40.3 degrees Celsius for the first time in history. Wildfires burned across France Greece Portugal and Spain forcing tens of thousands of people to evacuate. Health authorities warned of serious risks to elderly and vulnerable people. The UK issued its first ever red extreme heat warning. Thousands of excess deaths were recorded across Europe linked to the extreme temperatures. Climate scientists said such events are becoming more frequent and intense due to global warming.",
+    "source": "theguardian.com",
+    "date": "2022-07-19",
+    "category": "climate",
+    "label": "real"
+  },
+  {
+    "id": "r032",
+    "title": "UN climate report warns Earth on track to warm by 3 degrees without urgent action",
+    "text": "A comprehensive report by the Intergovernmental Panel on Climate Change warned that Earth is on track to warm by up to 3 degrees Celsius this century without dramatic cuts to greenhouse gas emissions. The report synthesised findings from thousands of scientific studies and concluded that climate change impacts are already being felt worldwide through more intense heatwaves storms droughts and rising sea levels. Scientists said some impacts are now irreversible but limiting warming to 1.5 degrees Celsius is still possible with rapid and deep cuts to emissions across all sectors especially energy and transport.",
+    "source": "nature.com",
+    "date": "2023-03-20",
+    "category": "climate",
+    "label": "real"
+  },
+  {
+    "id": "r033",
+    "title": "Adani Group stocks crash after US short seller Hindenburg Research accuses firm of fraud",
+    "text": "Shares of Adani Group companies crashed dramatically losing more than 100 billion dollars in market value after New York based short seller Hindenburg Research published a report alleging the Indian conglomerate engaged in stock manipulation and accounting fraud over decades. Adani Group denied all allegations and called the report a calculated attack on India. The allegations triggered questions in Parliament and calls for a government investigation. The Swiss bank Credit Suisse stopped accepting Adani Group bonds as collateral. Founder Gautam Adani cancelled a 2.5 billion dollar share sale to protect investors.",
+    "source": "bloomberg.com",
+    "date": "2023-01-27",
+    "category": "finance",
+    "label": "real"
+  },
+  {
+    "id": "r034",
+    "title": "SpaceX Starship rocket completes first successful test flight landing both stages",
+    "text": "SpaceX Starship rocket completed its fourth integrated flight test successfully landing both the Super Heavy booster and the Starship upper stage for the first time. The Super Heavy booster performed a precise splashdown in the Gulf of Mexico while Starship entered the atmosphere and splashed down safely in the Indian Ocean. The flight reached a peak altitude of 210 kilometres. CEO Elon Musk said the test exceeded all expectations and brings the fully reusable rocket system closer to commercial operations. NASA has selected Starship to land astronauts on the Moon as part of the Artemis programme.",
+    "source": "reuters.com",
+    "date": "2024-06-06",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r035",
+    "title": "Bank of India cuts repo rate for first time in four years amid slowing growth",
+    "text": "The Reserve Bank of India cut its key repo rate by 25 basis points to 6.25 percent in February 2025 marking the first rate reduction in nearly four years as economic growth slowed below expectations. The monetary policy committee voted 4 to 2 in favour of the cut. Governor Sanjay Malhotra said the decision was taken to support growth while keeping inflation within the 4 percent target band. India GDP growth slowed to 6.4 percent in the fiscal year as consumer spending moderated. The rate cut is expected to reduce EMIs on home and auto loans for millions of borrowers.",
+    "source": "livemint.com",
+    "date": "2025-02-07",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r036",
+    "title": "New study links ultra-processed foods to increased risk of depression and anxiety",
+    "text": "A large-scale study published in the British Medical Journal found that consuming high amounts of ultra-processed foods was associated with a significantly higher risk of depression anxiety sleep disorders and early death. The analysis pooled data from 45 meta-analyses covering nearly 10 million people worldwide. Ultra-processed foods include packaged snacks breakfast cereals soft drinks and ready-to-eat meals that contain additives preservatives and artificial colours. Participants who consumed the most ultra-processed foods had a 22 percent higher risk of depression. Researchers recommended replacing processed foods with whole grains fruits and vegetables.",
+    "source": "bmj.com",
+    "date": "2024-02-28",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r037",
+    "title": "Google Gemini AI model surpasses GPT-4 on key benchmarks researchers say",
+    "text": "Google DeepMind released Gemini its most capable AI model yet which the company claims surpasses GPT-4 on 30 of 32 widely used academic benchmarks. Gemini comes in three sizes Ultra Pro and Nano for different use cases from data centres to mobile devices. The Ultra version was the first model to outperform human experts on the MMLU benchmark which covers 57 subjects including maths physics history and medicine. Google CEO Sundar Pichai called Gemini the biggest science and engineering effort in Google history. The model will be integrated into Google Search Ads and other products.",
+    "source": "wired.com",
+    "date": "2023-12-06",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r038",
+    "title": "China economy grows 5.2 percent in 2023 meeting government target despite property crisis",
+    "text": "China economy grew 5.2 percent in 2023 meeting the government annual target of around 5 percent despite ongoing challenges from a property sector slump weak consumer confidence and deflationary pressures according to the National Bureau of Statistics. The fourth quarter grew 5.2 percent year on year. Factory output rose 4.6 percent for the year while retail sales increased 7.2 percent. China central bank cut various lending rates and banks reduced mortgage rates to stimulate the economy. However economists warn that without more aggressive stimulus measures growth could remain sluggish in 2024.",
+    "source": "ft.com",
+    "date": "2024-01-17",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r039",
+    "title": "Universal basic income pilot shows positive results in Finland two-year study finds",
+    "text": "A two-year pilot study of universal basic income in Finland found that participants reported higher levels of wellbeing confidence and trust in institutions compared to a control group. Around 2000 unemployed Finns received 560 euros per month unconditionally during 2017 and 2018. Participants showed better mental health more trust in social institutions and slightly higher employment levels than the control group. The study published by the Finnish government is considered the largest randomised controlled trial of UBI in a developed country. Policymakers and economists are studying the results as interest in UBI grows worldwide.",
+    "source": "theguardian.com",
+    "date": "2020-05-06",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r040",
+    "title": "Scientists successfully edit human embryo genes to eliminate inherited disease",
+    "text": "Scientists in the United States reported the first successful editing of genes in human embryos to eliminate a serious hereditary heart condition using CRISPR technology according to a study published in the journal Nature. The researchers corrected mutations in the MYBPC3 gene which causes hypertrophic cardiomyopathy a leading cause of sudden cardiac death in young athletes. Around 72 percent of embryos showed correction of the mutation. The research was conducted in laboratory conditions and no embryos were implanted. The work raises profound ethical questions about germline editing and designer babies.",
+    "source": "nature.com",
+    "date": "2017-08-02",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r041",
+    "title": "Pakistan and India agree to ceasefire ending military escalation along border",
+    "text": "Pakistan and India agreed to a ceasefire on Saturday halting days of cross-border military exchanges that represented the most serious escalation between the nuclear-armed neighbours in decades. The ceasefire was announced by Pakistan foreign minister and confirmed by India foreign ministry. US officials including the Secretary of State played a key role in facilitating the agreement. The military exchanges began after India conducted airstrikes on Pakistani territory citing cross-border terrorism. Several military aircraft were reported shot down and civilian casualties were reported on both sides.",
+    "source": "apnews.com",
+    "date": "2019-02-28",
+    "category": "world",
+    "label": "real"
+  },
+  {
+    "id": "r042",
+    "title": "India inflation rises to 5.7 percent as food prices surge amid heatwave",
+    "text": "India retail inflation rose to 5.7 percent in December driven by higher food prices after extreme heat damaged crops across major producing regions. Vegetable prices surged 27 percent while cereal prices rose 7.9 percent according to the Ministry of Statistics. The rise puts inflation back above the Reserve Bank of India comfortable zone of 2 to 6 percent. Food makes up nearly 46 percent of India consumer price index making it highly sensitive to agricultural disruptions. The central bank kept rates on hold at its last meeting but analysts say persistent inflation could delay planned rate cuts.",
+    "source": "business-standard.com",
+    "date": "2024-01-12",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r043",
+    "title": "BRICS summit expands bloc adding Saudi Arabia UAE Ethiopia and Egypt as new members",
+    "text": "The BRICS group of emerging economies agreed to expand its membership by adding six new countries including Saudi Arabia the United Arab Emirates Ethiopia Egypt Argentina and Iran at the bloc annual summit in Johannesburg. The expansion doubles the size of the bloc which consists of Brazil Russia India China and South Africa. The enlarged BRICS would account for about 36 percent of global GDP and over 46 percent of the world population. Leaders of the bloc said the expansion reflects a desire to build a more multipolar world less dominated by Western institutions.",
+    "source": "aljazeera.com",
+    "date": "2023-08-24",
+    "category": "world",
+    "label": "real"
+  },
+  {
+    "id": "r044",
+    "title": "Taiwan election results Lai Ching-te wins presidency maintaining Democratic Progressive Party rule",
+    "text": "Taiwan voters elected Lai Ching-te of the ruling Democratic Progressive Party as the island new president on Saturday in elections closely watched by China the United States and allies across Asia. Lai won approximately 40 percent of the vote against rivals from the Kuomintang and Taiwan People Party. China which claims Taiwan as part of its territory condemned the result and warned of continued pressure. The Biden administration congratulated Lai but reiterated US opposition to Taiwan formal independence. The election outcome is expected to maintain current cross-strait tensions.",
+    "source": "reuters.com",
+    "date": "2024-01-13",
+    "category": "politics",
+    "label": "real"
+  },
+  {
+    "id": "r045",
+    "title": "Dengue fever cases hit record high in Americas with over 5 million infections",
+    "text": "The Americas recorded a record high of more than 5 million dengue fever cases in the first four months of 2024 exceeding the total for all of 2023 which itself was a record year. Brazil accounted for more than 4 million cases. Health authorities attributed the surge to climate change driven warmer temperatures expanding the habitat of the Aedes aegypti mosquito that transmits dengue. The WHO declared dengue a major global health concern. There is no specific treatment for dengue and the disease kills approximately 40000 people annually worldwide. Several countries declared health emergencies.",
+    "source": "who.int",
+    "date": "2024-04-15",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r046",
+    "title": "Researchers achieve room temperature superconductivity claim sparks scientific scrutiny",
+    "text": "A physicist at the University of Rochester claiming a major breakthrough in room-temperature superconductivity published findings in the journal Nature saying his team had achieved electrical resistance-free conductivity at room temperature and relatively low pressure. If confirmed the discovery would revolutionise energy transmission transportation and electronics eliminating energy losses from electrical resistance. However the paper was later retracted by Nature after peer reviewers raised serious concerns about data manipulation. The scientific community has repeatedly seen superconductivity claims that failed to replicate highlighting the importance of rigorous peer review.",
+    "source": "nature.com",
+    "date": "2023-03-08",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r047",
+    "title": "Meta AI safety team resigns amid pressure to release products faster",
+    "text": "Several senior researchers from Meta AI safety team resigned citing pressure from leadership to release AI products faster and concerns that safety research was being deprioritised. The departures follow similar exits at OpenAI and Google DeepMind. The researchers said in public statements that the commercial imperative to ship AI products was overriding careful safety evaluation. Meta CEO Mark Zuckerberg said the company remains committed to responsible AI development and that departures are normal in a competitive industry. The AI safety community has raised growing concerns about the pace of AI deployment outstripping safety research.",
+    "source": "wsj.com",
+    "date": "2024-05-17",
+    "category": "technology",
+    "label": "real"
+  },
+  {
+    "id": "r048",
+    "title": "South Korea parliament votes to impeach President Yoon over short-lived martial law declaration",
+    "text": "South Korea parliament voted to impeach President Yoon Suk-yeol after he declared martial law for a few hours in a stunning move that shocked the country and global markets. The National Assembly voted 204 to 85 to uphold the impeachment motion suspending Yoon powers and transferring them to the prime minister. Yoon had declared martial law citing anti-state forces and trying to remove parliament guard but backed down within hours after lawmakers voted to lift it. The Constitutional Court has six months to rule on whether to permanently remove Yoon from office.",
+    "source": "bbc.com",
+    "date": "2024-12-14",
+    "category": "politics",
+    "label": "real"
+  },
+  {
+    "id": "r049",
+    "title": "WHO reports H5N1 bird flu spreading in US dairy cattle with first human death",
+    "text": "The World Health Organization and US Centers for Disease Control reported the spread of H5N1 avian influenza in dairy cattle herds across multiple US states with sporadic human infections among farm workers. The WHO confirmed a first human death from H5N1 in North America in a patient in Louisiana who had contact with sick birds and animals. Health authorities emphasised that the risk to the general public remains low but urged vigilance. Scientists are monitoring the virus for mutations that could make it more transmissible between humans. The outbreak has affected hundreds of dairy herds in more than 15 states.",
+    "source": "cdc.gov",
+    "date": "2025-01-06",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r050",
+    "title": "Donald Trump wins 2024 US presidential election defeating Kamala Harris",
+    "text": "Donald Trump won the 2024 United States presidential election defeating Democratic nominee and incumbent Vice President Kamala Harris to return to the White House for a second term. Trump won the electoral college decisively carrying all seven swing states including Pennsylvania Michigan and Wisconsin. Trump also won the popular vote becoming the first Republican to do so in 20 years. Trump supporters celebrated his victory which he called the greatest political comeback in American history. Harris conceded graciously saying the results represented a profound disappointment but acceptance of election outcomes is fundamental to democracy.",
+    "source": "apnews.com",
+    "date": "2024-11-06",
+    "category": "politics",
+    "label": "real"
+  },
+  {
+    "id": "r051",
+    "title": "India bans single-use plastics in major step to reduce pollution",
+    "text": "India banned the manufacture sale and use of 19 single-use plastic items from July 1 in a major effort to reduce plastic pollution in the world second most populous country. The banned items include plastic cutlery straws stirrers ice cream sticks and plastic bags under 75 microns thick. India generates around 3.5 million tonnes of plastic waste annually of which large amounts end up in the ocean. Penalties for violations include fines and imprisonment. Industry groups said more time was needed to transition to alternatives. The ban aligns India with over 60 countries that have similar restrictions on single-use plastics.",
+    "source": "thehindu.com",
+    "date": "2022-07-01",
+    "category": "environment",
+    "label": "real"
+  },
+  {
+    "id": "r052",
+    "title": "Antidepressants work better than placebo finds major meta-analysis of 500 trials",
+    "text": "A comprehensive meta-analysis of more than 500 clinical trials involving over 116000 patients found that 21 commonly prescribed antidepressants are all significantly more effective than placebo in treating adults with major depression. The study published in The Lancet calculated that antidepressants were on average 50 percent more effective than placebo in reducing depression symptoms. Effect sizes ranged from modest to moderate. Authors said the findings should end the long-running controversy about whether antidepressants work and shift attention to improving access prescribing practices and combination with therapy.",
+    "source": "thelancet.com",
+    "date": "2018-02-21",
+    "category": "health",
+    "label": "real"
+  },
+  {
+    "id": "r053",
+    "title": "Richest 1 percent own more wealth than bottom 95 percent Oxfam report finds",
+    "text": "The world richest 1 percent own more wealth than the bottom 95 percent of the global population combined according to an Oxfam report released ahead of the World Economic Forum in Davos. The gap has widened significantly since the COVID pandemic with billionaire wealth surging by 3.3 trillion dollars in 2023 while 4.8 billion people became poorer. Five of the world richest billionaires have more than doubled their wealth since 2020. Oxfam is calling for a global wealth tax of up to 5 percent on the super-rich to fund health education and climate programmes in developing countries.",
+    "source": "theguardian.com",
+    "date": "2024-01-15",
+    "category": "economy",
+    "label": "real"
+  },
+  {
+    "id": "r054",
+    "title": "Scientists discover largest known prime number with 41 million digits",
+    "text": "A mathematician using distributed computing software discovered the largest known prime number with over 41 million digits through the Great Internet Mersenne Prime Search project known as GIMPS. The number is a Mersenne prime of the form 2 to the power of p minus 1. This is only the 52nd known Mersenne prime ever discovered. Prime numbers have no factors other than 1 and themselves and very large primes have important applications in cryptography and internet security. The discovery required checking billions of numbers using specialised algorithms across thousands of volunteer computers.",
+    "source": "science.org",
+    "date": "2024-10-21",
+    "category": "science",
+    "label": "real"
+  },
+  {
+    "id": "r055",
+    "title": "Pakistan faces worst ever floods displacing 33 million people as third of country submerged",
+    "text": "Pakistan faced its worst floods in history with nearly a third of the country submerged under water displacing more than 33 million people and killing over 1700 according to the National Disaster Management Authority. Unprecedented monsoon rains combined with glacial melt devastated provinces of Sindh Balochistan and Khyber Pakhtunkhwa. The floods destroyed 1.7 million homes and damaged critical infrastructure including roads bridges and crops. Pakistan Prime Minister Shehbaz Sharif called the floods a climate catastrophe driven by wealthy nations pollution and appealed for international assistance. The UN launched an emergency appeal for 160 million dollars.",
+    "source": "bbc.com",
+    "date": "2022-08-30",
+    "category": "climate",
+    "label": "real"
+  },
+  {
+    "id": "r056",
+    "title": "Reliance Industries reports record quarterly profit of 19 000 crore rupees",
+    "text": "Reliance Industries Limited reported a record quarterly net profit of 19 000 crore rupees in the fourth quarter driven by strong performance across its oil and gas retail and digital services divisions. Chairman Mukesh Ambani said the conglomerate was on track to achieve its goal of becoming a technology company. Reliance Jio the telecom arm added 8 million subscribers in the quarter to reach 440 million users. Reliance Retail expanded its store count to over 18000 outlets. The company also announced plans to invest 75000 crore rupees in renewable energy over the next three years.",
+    "source": "livemint.com",
+    "date": "2023-04-28",
+    "category": "finance",
+    "label": "real"
+  },
+  {
+    "id": "r057",
+    "title": "Australia wildfires burn 18 million hectares killing estimated 3 billion animals",
+    "text": "Australia worst wildfire season devastated vast areas of the country burning approximately 18 to 20 million hectares of land across multiple states killing an estimated 3 billion animals according to researchers from the University of Sydney. The fires caused widespread air pollution across major cities and prompted mass evacuations. The blazes killed 34 people and destroyed over 3000 homes. Scientists linked the severity of the fires to prolonged drought and record temperatures driven by climate change. The fires devastated wildlife habitats including critical koala populations with some colonies losing more than 80 percent of their members.",
+    "source": "abc.net.au",
+    "date": "2020-01-08",
+    "category": "climate",
+    "label": "real"
+  },
+  {
+    "id": "r058",
+    "title": "US and China reach deal on climate cooperation at COP28 pledging to phase out coal",
+    "text": "The United States and China announced a significant agreement to cooperate on climate change ahead of the COP28 summit in Dubai pledging to triple renewable energy capacity by 2030 and phase down rather than out coal power. The deal between the world two largest greenhouse gas emitters was seen as a positive step after climate diplomacy stalled following the visit of House Speaker Nancy Pelosi to Taiwan. Both countries committed to accelerate the deployment of solar wind and other clean energy technologies. Climate campaigners said the deal did not go far enough as it stopped short of a firm commitment to end fossil fuels.",
+    "source": "reuters.com",
+    "date": "2023-11-11",
+    "category": "climate",
+    "label": "real"
+  },
+  {
+    "id": "r059",
+    "title": "Virat Kohli announces retirement from Test cricket after 14 year career",
+    "text": "Indian cricket star Virat Kohli announced his retirement from Test cricket on social media stating that the time has come to move on. Kohli amassed 9000 plus Test runs in his 14 year career and led India to the number one Test ranking for multiple years. The 35 year old batsman scored 29 Test centuries and held the record for most runs as captain in Test history. His retirement follows fellow great Rohit Sharma who also retired from Tests earlier in 2025. Kohli said he will continue to play white ball cricket for India. Indian cricket fans reacted with an outpouring of emotion on social media.",
+    "source": "espncricinfo.com",
+    "date": "2025-05-12",
+    "category": "sports",
+    "label": "real"
+  },
+  {
+    "id": "r060",
+    "title": "Elon Musk Mars colony goal faces major technical and legal hurdles SpaceX admits",
+    "text": "SpaceX engineers and scientists in internal presentations acknowledged significant technical and regulatory challenges to Elon Musk stated goal of establishing a self-sustaining human colony on Mars of one million people. Key challenges include developing reliable life support systems protecting colonists from intense cosmic radiation on the 7-month journey preventing muscle and bone loss in low gravity and producing oxygen water and food on Mars surface. NASA estimates it would cost over 1 trillion dollars. Regulatory approvals from the FAA and other agencies also pose a significant barrier. Musk has said he wants the first crewed Mars mission as early as 2029.",
+    "source": "wired.com",
+    "date": "2024-03-04",
+    "category": "science",
+    "label": "real"
+  }
+]
