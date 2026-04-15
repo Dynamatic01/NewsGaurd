@@ -544,6 +544,45 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 2rem;text-al
   font-size:.68rem;color:var(--muted);padding-top:.5rem;
   border-top:1px solid rgba(255,255,255,.06);
 }
+
+/* ═══════════════════════════════════
+   PROTOTYPE MODE STYLES
+   ═══════════════════════════════════ */
+#proto-banner{
+  position:fixed;top:62px;left:0;right:0;z-index:500;
+  background:linear-gradient(90deg,rgba(124,58,237,.94),rgba(109,40,217,.94));
+  border-bottom:1px solid rgba(167,139,250,.35);
+  backdrop-filter:blur(16px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 2rem;gap:1rem;flex-wrap:wrap;
+  transition:all .3s;
+}
+#proto-banner.hidden{display:none!important}
+.proto-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.proto-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  border-radius:20px;padding:3px 12px;
+  font-size:.72rem;font-weight:800;letter-spacing:.09em;color:#fff;
+  text-transform:uppercase;
+  animation:protoPulse 2s infinite;
+}
+@keyframes protoPulse{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,.5)}50%{box-shadow:0 0 0 5px rgba(167,139,250,0)}}
+.proto-desc{font-size:.73rem;color:rgba(255,255,255,.8);font-weight:500}
+.proto-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.proto-select{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
+  border-radius:8px;padding:4px 10px;color:#fff;font-size:.73rem;font-weight:600;
+  cursor:pointer;outline:none;
+}
+.proto-select option{background:#2d1b69;color:#fff}
+.proto-toggle-btn{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);
+  border-radius:8px;padding:4px 13px;color:#fff;font-size:.72rem;font-weight:700;
+  cursor:pointer;transition:background .2s;
+}
+.proto-toggle-btn:hover{background:rgba(255,255,255,.25)}
+body.proto-mode-on .content{padding-top:calc(62px + 38px)!important}
 </style>
 </head>
 <body>
@@ -567,6 +606,23 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 2rem;text-al
     <li><a href="#" class="nav-cta">GitHub ↗</a></li>
   </ul>
 </nav>
+
+<!-- ═══ PROTOTYPE MODE BANNER ═══ -->
+<div id="proto-banner">
+  <div class="proto-left">
+    <div class="proto-badge">🧪 Prototype Mode</div>
+    <span class="proto-desc">Demo results only — No real API calls are made during this presentation</span>
+  </div>
+  <div class="proto-right">
+    <select class="proto-select" id="proto-dataset" title="Select demo dataset">
+      <option value="random">🎲 Random Dataset</option>
+      <option value="fake">🔴 Fake News Example</option>
+      <option value="suspicious">🟠 Suspicious Example</option>
+      <option value="real">🟢 Real News Example</option>
+    </select>
+    <button class="proto-toggle-btn" id="proto-toggle-btn" onclick="toggleProtoMode()">Exit Demo Mode</button>
+  </div>
+</div>
 
 <div class="content">
 
@@ -1237,6 +1293,166 @@ async function extractBase64(file) {
   });
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// PROTOTYPE MODE ENGINE
+// ═══════════════════════════════════════════════════════════════════════
+
+let PROTO_MODE = true; // set to false to re-enable live API calls
+
+function toggleProtoMode() {
+  PROTO_MODE = !PROTO_MODE;
+  const banner = document.getElementById('proto-banner');
+  const btn    = document.getElementById('proto-toggle-btn');
+  if (PROTO_MODE) {
+    banner.classList.remove('hidden');
+    document.body.classList.add('proto-mode-on');
+    btn.textContent = 'Exit Demo Mode';
+  } else {
+    banner.classList.add('hidden');
+    document.body.classList.remove('proto-mode-on');
+    btn.textContent = '🧪 Enter Demo Mode';
+  }
+}
+
+// Activate on page load
+document.body.classList.add('proto-mode-on');
+
+// ── MOCK DATASETS ──────────────────────────────────────────────────────────
+const PROTO_DATASETS = {
+  fake: {
+    _tag: 'FAKE',
+    credibility_score: 22,
+    verdict: 'LIKELY FAKE',
+    risk_level: 'HIGH',
+    summary: 'This content exhibits multiple hallmarks of fabricated viral misinformation. The central claim has no verifiable basis in any government statement or official record. Sensational framing, absent authorship, and emotionally charged language are consistent with coordinated disinformation campaigns observed across social media platforms.',
+    recommendation: 'Do NOT share this content. Verify directly on official government websites (pib.gov.in) and cross-reference with Reuters, AP News, or NDTV before acting on any claim made in this article.',
+    red_flags: [
+      { label: 'Unverifiable Claim', explanation: 'Central assertion cannot be traced to any official press release, gazette notification, or credible news outlet.', severity: 'high' },
+      { label: 'No Author / Byline', explanation: 'Content is anonymous — a strong indicator of fabricated viral posts.', severity: 'high' },
+      { label: 'Emotional Manipulation', explanation: 'Loaded language designed to provoke outrage and urgency, bypassing critical thinking.', severity: 'high' },
+      { label: 'Recycled Narrative', explanation: 'Nearly identical claims were debunked by Snopes and FactCheck.org in previous cycles.', severity: 'medium' },
+      { label: 'No Date / Source URL', explanation: 'Absence of publication date and original URL prevents independent verification.', severity: 'medium' }
+    ],
+    green_flags: [],
+    metrics: { sensationalism: 89, emotional_manipulation: 82, factual_consistency: 11, source_credibility: 8, writing_quality: 32 },
+    verified_sources: ['https://pib.gov.in', 'https://snopes.com', 'https://factcheck.org'],
+    sources_checked: 6,
+    _ai_engine: 'prototype',
+    similarity: {
+      verdict: 'SUSPICIOUS',
+      max_score: 0.09, max_pct: 9.1, confidence: 91,
+      explanation: 'No verified article in our knowledge base matches this claim. Absence of similar coverage from trusted outlets is itself a red flag.',
+      top_matches: [
+        { title: 'Government Electricity Subsidy Scheme — Official Details', source: 'PIB India', score: 0.09, pct: 9.1, category: 'politics', date: '2023-11-14' },
+        { title: 'Fake News Alert: Viral Claims About Free Power Debunked', source: 'BOOM Live', score: 0.07, pct: 7.4, category: 'politics', date: '2024-03-02' }
+      ],
+      kb_size: 68, engine: 'TF-IDF + Cosine Similarity'
+    }
+  },
+
+  suspicious: {
+    _tag: 'SUSPICIOUS',
+    credibility_score: 43,
+    verdict: 'SUSPICIOUS',
+    risk_level: 'MEDIUM',
+    summary: 'This content contains a mixture of factual statements and unverified amplifications. While the underlying news event is real, the figures and implications presented appear to be significantly exaggerated beyond what authoritative sources have reported. Selective quoting and missing context elevate the risk of misinterpretation.',
+    recommendation: 'Treat with caution. The core event may be real, but the numbers and conclusions presented should be verified through Reuters, AP, or official data before sharing.',
+    red_flags: [
+      { label: 'Statistical Exaggeration', explanation: 'Reported figures are 3–4× higher than those cited by official government data released the same day.', severity: 'high' },
+      { label: 'Missing Context', explanation: 'Critical background information has been omitted, altering the interpretation of the event significantly.', severity: 'medium' },
+      { label: 'Partisan Framing', explanation: 'Language choice shows clear ideological bias — story framed to support a specific political narrative.', severity: 'medium' }
+    ],
+    green_flags: [
+      { label: 'Event Is Real', explanation: 'The underlying news event occurred and has been confirmed by multiple independent outlets.' },
+      { label: 'Named Source Quoted', explanation: 'An identifiable spokesperson is quoted, though the quote appears taken out of context.' }
+    ],
+    metrics: { sensationalism: 58, emotional_manipulation: 47, factual_consistency: 41, source_credibility: 44, writing_quality: 61 },
+    verified_sources: ['https://thehindu.com', 'https://reuters.com', 'https://boomlive.in'],
+    sources_checked: 5,
+    _ai_engine: 'prototype',
+    similarity: {
+      verdict: 'PARTIALLY_SIMILAR',
+      max_score: 0.41, max_pct: 41.2, confidence: 72,
+      explanation: 'Partial match found with verified coverage of the same event from trusted outlets. The core event is real but key details in this version diverge from verified reporting.',
+      top_matches: [
+        { title: 'Opposition Rally in Delhi: Key Facts and Figures', source: 'The Hindu', score: 0.41, pct: 41.2, category: 'politics', date: '2025-01-18' },
+        { title: 'Delhi Protest: What Official Data Shows', source: 'Reuters', score: 0.34, pct: 34.7, category: 'politics', date: '2025-01-19' },
+        { title: 'Fact-Check: Crowd Estimates at Jan 18 Rally', source: 'BOOM Live', score: 0.28, pct: 28.1, category: 'politics', date: '2025-01-20' }
+      ],
+      kb_size: 68, engine: 'TF-IDF + Cosine Similarity'
+    }
+  },
+
+  real: {
+    _tag: 'REAL',
+    credibility_score: 88,
+    verdict: 'CREDIBLE',
+    risk_level: 'LOW',
+    summary: 'This content is well-sourced, accurately represents available data, and aligns closely with reporting from multiple independent credible outlets. The writing style is neutral, factual claims are supported by named sources, and the publication has strong editorial standards. No significant red flags detected.',
+    recommendation: 'This content appears to be credible reporting. Cross-verification with one additional source (e.g., Reuters or BBC) is always advisable for important decisions, but this article can generally be trusted.',
+    red_flags: [
+      { label: 'Minor Headline Simplification', explanation: 'The headline slightly oversimplifies the nuance present in the article body — common in mainstream journalism.', severity: 'low' }
+    ],
+    green_flags: [
+      { label: 'Named Author & Publication', explanation: 'Attributed to a verified journalist at a Tier-1 rated publication with 30+ years editorial history.' },
+      { label: 'Multiple Named Sources', explanation: 'Three independent experts and one official spokesperson are quoted with verifiable credentials.' },
+      { label: 'Statistical Claims Verified', explanation: 'All numerical data cross-checks with publicly available government databases and WHO reports.' },
+      { label: 'No Sensational Language', explanation: 'Neutral, factual tone maintained throughout — no emotionally manipulative framing detected.' }
+    ],
+    metrics: { sensationalism: 12, emotional_manipulation: 9, factual_consistency: 91, source_credibility: 94, writing_quality: 88 },
+    verified_sources: ['https://reuters.com', 'https://who.int', 'https://pib.gov.in', 'https://apnews.com'],
+    sources_checked: 7,
+    _ai_engine: 'prototype',
+    similarity: {
+      verdict: 'LIKELY_REAL',
+      max_score: 0.78, max_pct: 78.3, confidence: 95,
+      explanation: 'Strong match found with verified reporting from multiple Tier-1 sources. Content aligns well with established fact-checked articles in our knowledge base.',
+      top_matches: [
+        { title: 'India Vaccination Drive Hits Record Single-Day Milestone', source: 'Reuters', score: 0.78, pct: 78.3, category: 'health', date: '2024-09-05' },
+        { title: 'WHO Confirms India Vaccination Coverage Milestone', source: 'WHO', score: 0.72, pct: 72.1, category: 'health', date: '2024-09-06' },
+        { title: 'CoWIN Data: Vaccination Progress by State', source: 'PIB India', score: 0.65, pct: 65.4, category: 'health', date: '2024-09-04' }
+      ],
+      kb_size: 68, engine: 'TF-IDF + Cosine Similarity'
+    }
+  }
+};
+
+// ── Score randomisation per bucket ──────────────────────────────────────────
+function protoRandomScore(tag) {
+  if (tag === 'FAKE')       return 25 + Math.floor(Math.random() * 21);  // 25–45
+  if (tag === 'SUSPICIOUS') return 36 + Math.floor(Math.random() * 25);  // 36–60
+  return 71 + Math.floor(Math.random() * 25);                             // 71–95
+}
+
+// ── Pick dataset ─────────────────────────────────────────────────────────────
+function protoPickDataset() {
+  const sel = (document.getElementById('proto-dataset') || {}).value || 'random';
+  if (sel === 'fake')       return PROTO_DATASETS.fake;
+  if (sel === 'suspicious') return PROTO_DATASETS.suspicious;
+  if (sel === 'real')       return PROTO_DATASETS.real;
+  const keys = ['fake', 'suspicious', 'real'];
+  return PROTO_DATASETS[keys[Math.floor(Math.random() * keys.length)]];
+}
+
+// ── Prototype delay with cycling messages ────────────────────────────────────
+const PROTO_MSGS = [
+  'SCANNING CONTENT...', 'DETECTING LANGUAGE...', 'ANALYZING CLAIM PATTERNS...',
+  'CHECKING SOURCE CREDIBILITY...', 'CROSS-REFERENCING DATABASES...',
+  'RUNNING SIMILARITY ENGINE...', 'COMPUTING TRUST SCORE...', 'GENERATING REPORT...'
+];
+
+async function protoAnalyze() {
+  let i = 0;
+  const el = document.getElementById('loading-msg');
+  el.textContent = PROTO_MSGS[0];
+  const msgInt = setInterval(() => { i = (i + 1) % PROTO_MSGS.length; el.textContent = PROTO_MSGS[i]; }, 390);
+  await new Promise(r => setTimeout(r, 2600));
+  clearInterval(msgInt);
+  const dataset = protoPickDataset();
+  return { ...dataset, credibility_score: protoRandomScore(dataset._tag) };
+}
+
+// ── MAIN analyzeNews (prototype-aware) ──────────────────────────────────────
 async function analyzeNews(ev){
   const tab=document.querySelector('.tab-btn.active').dataset.tab;
   let text='', inputUrl='', image='';
@@ -1247,7 +1463,6 @@ async function analyzeNews(ev){
   } else if(tab==='url'){
     inputUrl=document.getElementById('url-input').value.trim();
     if(!inputUrl){alert('Please enter a URL.');return;}
-    // Auto-prefix scheme if missing
     if(!/^https?:\/\//i.test(inputUrl)) inputUrl='https://'+inputUrl;
   } else {
     if(!uploadedFile){alert('Please upload a screenshot.');return;}
@@ -1265,14 +1480,23 @@ async function analyzeNews(ev){
     document.getElementById('input-card').classList.remove('scanning');
   }
 
+  // ── PROTOTYPE MODE: return mock data, skip all real API calls ────────────
+  if (PROTO_MODE) {
+    try {
+      const result = await protoAnalyze();
+      done();
+      renderResults(result, false);
+    } catch(e) { done(); console.error(e); }
+    return;
+  }
+
+  // ── LIVE MODE: real API calls ─────────────────────────────────────────────
   try{
     let endpoint, body;
     if(isUrl){
-      // ── URL PIPELINE: backend fetches HTML → extracts text → AI analysis ──
       endpoint='http://127.0.0.1:5000/api/analyze-link';
       body=JSON.stringify({url: inputUrl});
     } else {
-      // ── TEXT / SCREENSHOT PIPELINE ──
       endpoint='http://127.0.0.1:5000/api/analyze';
       body=JSON.stringify({text: text || '[Screenshot submitted — unable to extract text client-side]', image: image});
     }
