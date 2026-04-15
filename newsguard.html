@@ -90,6 +90,41 @@ nav{
 .grad{background:linear-gradient(135deg,#ffffff 0%,var(--teal) 35%,var(--cyan) 75%,#d8b4fe 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(0,255,198,0.45)) drop-shadow(0 4px 15px rgba(0,0,0,0.9))}
 .hero>*>p{max-width:510px;font-size:1.05rem;color:#f8fafc;line-height:1.7;margin-top:.2rem;text-shadow:0 2px 15px rgba(0,0,0,1),0 0 20px rgba(0,0,0,0.8)}
 
+/* ── Rotating Hero Text ── */
+.hero-rotate-wrap{
+  margin-top:.55rem;min-height:2.4rem;display:flex;justify-content:center;align-items:center;
+}
+.hero-rotate-text{
+  font-family:'Poppins',sans-serif;
+  font-size:clamp(1.05rem,2.4vw,1.35rem);
+  font-weight:600;
+  letter-spacing:.01em;
+  background:linear-gradient(135deg,#00ffc6 0%,#22d3ee 55%,#a78bfa 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 14px rgba(0,255,198,0.55)) drop-shadow(0 0 30px rgba(34,211,238,0.25));
+  text-shadow:none;
+  white-space:nowrap;
+  opacity:1;
+  transition:opacity .25s ease;
+}
+.hero-cursor{
+  display:inline-block;
+  width:2px;height:1.2em;
+  background:linear-gradient(180deg,#00ffc6,#22d3ee);
+  border-radius:2px;
+  margin-left:3px;
+  vertical-align:middle;
+  animation:cursorBlink 1s step-end infinite;
+  box-shadow:0 0 8px rgba(0,255,198,0.8);
+  -webkit-text-fill-color:initial;
+}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:640px){
+  .hero-rotate-text{font-size:1rem;white-space:normal;text-align:center}
+  .hero-rotate-wrap{min-height:3rem}
+}
+
 /* Decorative rings around Earth removed */
 
 /* Satellite label */
@@ -540,7 +575,9 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 2rem;text-al
     <div class="hero-top">
       <div class="hero-badge"><span class="badge-dot"></span>AI-Powered · Real-Time · Global Coverage</div>
       <h1>Detect Misinformation<br/><span class="grad">Before It Spreads</span></h1>
-      <p>AI-powered analysis to verify news credibility, detect fake information, and show trust scores instantly across any language or source.</p>
+      <div class="hero-rotate-wrap">
+        <span class="hero-rotate-text" id="hero-rotate-text"></span><span class="hero-cursor" id="hero-cursor"></span>
+      </div>
     </div>
     <div class="hero-spacer"></div>
     <div class="hero-bottom" id="verify">
@@ -826,6 +863,64 @@ footer{border-top:1px solid rgba(255,255,255,.05);padding:3rem 2rem 2rem;text-al
     <div class="shimmer-line"></div><div class="shimmer-line"></div><div class="shimmer-line"></div>
   </div>
 </div>
+
+<script>
+/* ── Hero Rotating Text ── */
+(function(){
+  const phrases = [
+    "Verify News Instantly",
+    "Detect Fake Information",
+    "Real-Time Trust Scores",
+    "Works Across Any Language"
+  ];
+  const el   = document.getElementById('hero-rotate-text');
+  const cur  = document.getElementById('hero-cursor');
+  if(!el || !cur) return;
+
+  let phraseIdx  = 0;
+  let charIdx    = 0;
+  let isDeleting = false;
+  let paused     = false;
+
+  const TYPING_SPEED  = 55;   // ms per character typed
+  const DELETE_SPEED  = 30;   // ms per character deleted
+  const PAUSE_AFTER   = 2400; // ms to hold full phrase
+  const PAUSE_BEFORE  = 350;  // ms before deletion starts
+
+  function tick(){
+    const phrase = phrases[phraseIdx];
+
+    if(!isDeleting && charIdx <= phrase.length){
+      el.textContent = phrase.slice(0, charIdx);
+      charIdx++;
+      if(charIdx > phrase.length){
+        // phrase fully typed — pause then delete
+        setTimeout(()=>{ isDeleting=true; loop(); }, PAUSE_AFTER);
+        return;
+      }
+    } else if(isDeleting && charIdx >= 0){
+      el.textContent = phrase.slice(0, charIdx);
+      charIdx--;
+      if(charIdx < 0){
+        isDeleting = false;
+        phraseIdx  = (phraseIdx + 1) % phrases.length;
+        charIdx    = 0;
+        setTimeout(loop, PAUSE_BEFORE);
+        return;
+      }
+    }
+    loop();
+  }
+
+  function loop(){
+    const speed = isDeleting ? DELETE_SPEED : TYPING_SPEED;
+    setTimeout(tick, speed);
+  }
+
+  // Kick off after a short initial delay
+  setTimeout(loop, 600);
+})();
+</script>
 
 <script>
 /* ═══════════════════════════════════════════════════
